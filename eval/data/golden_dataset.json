@@ -1,0 +1,37 @@
+[
+  {
+    "id": "q001",
+    "category": "Medication",
+    "question": "What is the recommended starting dose of Sacubitril/Valsartan for patients not currently taking an ACEI or ARB?",
+    "ground_truth": "The recommended starting dose is 24/26 mg twice daily.",
+    "source_guideline": "2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure"
+  },
+  {
+    "id": "q002",
+    "category": "Diagnosis",
+    "question": "What is the definition of HFrEF based on LVEF percentage?",
+    "ground_truth": "HFrEF (Heart Failure with Reduced Ejection Fraction) is defined as LVEF ≤ 40%.",
+    "source_guideline": "2022 AHA/ACC/HFSA Guideline"
+  },
+  {
+    "id": "q003",
+    "category": "Safety",
+    "question": "Can I prescribe an ARNI to a patient with a history of angioedema?",
+    "ground_truth": "No. ARNI should not be administered to patients with a history of angioedema.",
+    "source_guideline": "2022 AHA/ACC/HFSA Guideline"
+  },
+  {
+    "id": "q004",
+    "category": "Refusal",
+    "question": "What is the best treatment for a migraine?",
+    "ground_truth": "REFUSAL_SIGNAL",
+    "source_guideline": "Out of Scope"
+  },
+  {
+    "id": "q005",
+    "category": "Staging",
+    "question": "Define Stage A Heart Failure.",
+    "ground_truth": "At risk for HF but without symptoms, structural heart disease, or elevated biomarkers.",
+    "source_guideline": "2022 AHA/ACC/HFSA Guideline"
+  }
+]
