@@ -17,15 +17,15 @@ class ContextFilter(logging.Filter):
         super().__init__()
         self.environment = environment
 
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         record.environment = self.environment
         return True
 
 
 def setup_logger(
     name: str,
-    log_level: int = logging.INFO,
-    log_file: Optional[Path] = None,
+    log_level: str = "INFO",
+    log_file: Path | None = None,
 ) -> logging.Logger:
     """Configure and return a logger with specified settings.
 
@@ -38,7 +38,9 @@ def setup_logger(
         Configured logger instance.
     """
     logger = logging.getLogger(name)
-    logger.setLevel(log_level)
+    # Convert string log level to logging constant
+    log_level_numeric = getattr(logging, log_level.upper(), logging.INFO)
+    logger.setLevel(log_level_numeric)
 
     # Prevent adding multiple handlers if logger is already configured
     if logger.handlers:

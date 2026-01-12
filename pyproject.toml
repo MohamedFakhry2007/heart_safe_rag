@@ -39,6 +39,8 @@ python-dotenv = "^1.0.0"
 loguru = "^0.7.2"  # For structured logging
 pydantic-settings = "^2.12.0"
 pytest = "^9.0.2"
+rank-bm25 = "^0.2.2"
+langchain-huggingface = "^0.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -50,6 +52,8 @@ heartsafe-ingest = "heartsafe_rag.cli:ingest"
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+
+[tool.ruff.lint]
 select = [
     "E", "F", "W", "I",  # Default Flake8 rules
     "UP",  # pyupgrade
@@ -60,7 +64,7 @@ ignore = [
     "F401",  # Unused imports - sometimes needed for type checking
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Allow unused imports in __init__.py
 
 [tool.mypy]
@@ -77,3 +81,8 @@ warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
 strict_equality = true
+[dependency-groups]
+dev = [
+    "mypy (>=1.19.1,<2.0.0)",
+    "ruff (>=0.14.11,<0.15.0)"
+]

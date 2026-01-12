@@ -7,18 +7,18 @@ designed for heart failure guidelines, with a focus on accuracy and reliability.
 __version__ = "0.1.0"
 
 # Import key components to make them available at package level
-from heartsafe_rag.config import settings  # noqa: F401
-from heartsafe_rag.exceptions import (  # noqa: F401
-    HeartSafeError,
+# Set up logging configuration
+import logging
+
+from heartsafe_rag.config import settings
+from heartsafe_rag.exceptions import (
     ConfigurationError,
     DocumentProcessingError,
+    HeartSafeError,
     ImageProcessingError,
     LLMError,
     ValidationError,
 )
-
-# Set up logging configuration
-import logging
 from heartsafe_rag.utils.logger import setup_logger
 
 # Configure root logger

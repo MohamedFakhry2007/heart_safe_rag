@@ -1,9 +1,9 @@
 """Tests for the chunking module."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 from langchain.docstore.document import Document
 
 from heartsafe_rag.chunking import GuidelineChunker
@@ -21,12 +21,12 @@ def test_chunking_logic():
         "Step 2 measure peptides. Step 3 echocardiography.\n"
         "[IMAGE DESCRIPTION END]"
     )
-    
+
     doc = Document(
-        page_content=mock_text, 
+        page_content=mock_text,
         metadata={"source": "data/guidelines/2022-AHA-HF-Management.pdf"}
     )
-    
+
     print(f"--- Input Document Length: {len(mock_text)} chars ---")
 
     # Initialize chunker with test settings
@@ -35,16 +35,16 @@ def test_chunking_logic():
         chunk_overlap=100,
         separators=["\n\n", "\n", ". ", " ", ""]
     )
-    
+
     chunks = chunker.split_documents([doc])
-    
+
     print(f"--- Generated {len(chunks)} Chunks ---")
-    
+
     for i, chunk in enumerate(chunks):
         print(f"\n[Chunk {i}] (Len: {len(chunk.page_content)})")
         print(f"Metadata: {chunk.metadata}")
         print(f"Content Preview: {chunk.page_content[:100]}...")
-        
+
         # Verification Logic
         assert "2022" in str(chunk.metadata['guideline_year']), "Year not extracted correctly!"
         assert len(chunk.page_content) <= 550, f"Chunk too large: {len(chunk.page_content)} chars"
@@ -61,12 +61,12 @@ def test_empty_documents():
 def test_metadata_extraction():
     """Test the metadata extraction from filenames."""
     chunker = GuidelineChunker()
-    
+
     # Test with year in filename
     meta = chunker._extract_metadata_from_source("data/guidelines/2022-AHA-HF-Management.pdf")
     assert meta["guideline_year"] == 2022
     assert meta["source"] == "2022-AHA-HF-Management.pdf"
-    
+
     # Test without year in filename
     meta = chunker._extract_metadata_from_source("data/guidelines/AHA-HF-Management.pdf")
     assert meta["guideline_year"] == "Unknown"
@@ -75,12 +75,12 @@ def test_metadata_extraction():
 def test_content_cleaning():
     """Test the content cleaning logic."""
     chunker = GuidelineChunker()
-    
+
     # Test excessive newlines
     cleaned = chunker._clean_content("First line\n\n\n\nSecond line")
     assert "\n\n" in cleaned
     assert "\n\n\n" not in cleaned
-    
+
     # Test leading/trailing whitespace
     cleaned = chunker._clean_content("  test  \n")
     assert cleaned == "test"
