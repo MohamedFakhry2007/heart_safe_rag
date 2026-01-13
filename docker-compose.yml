@@ -1,0 +1,17 @@
+services:
+  api:
+    build: .
+    container_name: heartsafe_api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the data directory so the container can access your PDFs and Indices
+      - ./data:/app/data
+      # Mount source code for live editing (optional, good for dev)
+      - ./src:/app/src
+    environment:
+      - ENVIRONMENT=production
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    env_file:
+      - .env
+    restart: unless-stopped

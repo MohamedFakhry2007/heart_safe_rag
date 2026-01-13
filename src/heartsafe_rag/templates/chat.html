@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeartSafe AI Assistant</title>
+    <style>
+        :root {
+            --primary-color: #0d6efd; /* Medical Blue */
+            --bg-color: #f8f9fa;
+            --chat-bg: #ffffff;
+            --user-msg-bg: #e7f1ff;
+            --ai-msg-bg: #ffffff;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--chat-bg);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 { margin: 0; font-size: 1.5rem; }
+        .header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.9; }
+
+        #chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 10px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--user-msg-bg);
+            color: #333;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background-color: var(--ai-msg-bg);
+            border: 1px solid var(--border-color);
+            color: #333;
+            border-bottom-left-radius: 2px;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            background-color: white;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        button:hover { background-color: #0b5ed7; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Citation Styling */
+        .citations {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .citation-item {
+            margin-bottom: 5px;
+            padding: 5px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .source-tag {
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .loading {
+            font-style: italic;
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="header">
+        <h1>HeartSafe AI</h1>
+        <p>Clinical Assistant for Heart Failure Guidelines</p>
+    </div>
+
+    <div id="chat-history">
+        <div class="message ai">
+            Hello. I am ready to assist with heart failure queries.
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Ask a clinical question..." autocomplete="off">
+        <button id="send-btn">Send</button>
+    </div>
+</div>
+
+<script>
+    const chatHistory = document.getElementById('chat-history');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // Function to append message to chat
+    function appendMessage(text, sender, sources = null) {
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        
+        // Convert newlines to breaks for AI responses
+        let content = text.replace(/\n/g, '<br>');
+        div.innerHTML = content;
+
+        // If sources exist (RAG), append them nicely
+        if (sources && sources.length > 0) {
+            const citationsDiv = document.createElement('div');
+            citationsDiv.className = 'citations';
+            citationsDiv.innerHTML = '<strong>Sources:</strong>';
+            
+            sources.forEach((src, index) => {
+                const item = document.createElement('div');
+                item.className = 'citation-item';
+                // Clean up source path for display (remove data/raw_pdfs/ prefix)
+                const cleanSource = src.source.split(/[\\/]/).pop();
+                item.innerHTML = `
+                    <div class="source-tag">${cleanSource}</div>
+                    ${src.content}
+                `;
+                citationsDiv.appendChild(item);
+            });
+            div.appendChild(citationsDiv);
+        }
+
+        chatHistory.appendChild(div);
+        chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll
+    }
+
+    async function sendMessage() {
+        const query = userInput.value.trim();
+        if (!query) return;
+
+        // UI Updates
+        appendMessage(query, 'user');
+        userInput.value = '';
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+
+        // Add loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'message ai loading';
+        loadingDiv.textContent = 'Thinking...';
+        chatHistory.appendChild(loadingDiv);
+
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            });
+
+            // Remove loading indicator
+            chatHistory.removeChild(loadingDiv);
+
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
+            const data = await response.json();
+            
+            // Display answer with citations if available
+            appendMessage(data.answer, 'ai', data.sources);
+
+        } catch (error) {
+            chatHistory.removeChild(loadingDiv);
+            appendMessage("Sorry, an error occurred while processing your request.", 'ai');
+            console.error(error);
+        } finally {
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+    }
+
+    // Event Listeners
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+
+</body>
+</html>

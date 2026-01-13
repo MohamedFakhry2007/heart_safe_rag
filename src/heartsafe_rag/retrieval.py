@@ -92,3 +92,64 @@ class HybridRetriever:
 
 # Singleton instance to be used by the app
 retriever_factory = HybridRetriever()
+
+
+class RetrievalService:
+    """
+    Service to handle loading indices and performing hybrid retrieval.
+    """
+    def __init__(self):
+        self.retriever = self._initialize_retriever()
+
+    def _initialize_retriever(self) -> BaseRetriever:
+        """
+        Load FAISS and BM25 indices and create the EnsembleRetriever.
+        """
+        try:
+            # 1. Load Embeddings
+            embeddings = HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL)
+
+            # 2. Load FAISS (Vector Store)
+            if not settings.VECTOR_DB_PATH.exists():
+                logger.warning("Vector DB not found. Please run ingestion first.")
+                raise ConfigurationError("Vector DB not found.")
+                
+            logger.info(f"Loading Vector Store from {settings.VECTOR_DB_PATH}...")
+            
+            vectorstore = FAISS.load_local(
+                folder_path=str(settings.VECTOR_DB_PATH),  # Point to the 'vector_store' folder
+                index_name="index",                        # Default name used by save_local
+                embeddings=embeddings,
+                allow_dangerous_deserialization=True
+            )
+            faiss_retriever = vectorstore.as_retriever(search_kwargs={"k": settings.RETRIEVAL_K})
+
+            # 3. Load BM25 (Keyword)
+            bm25_path = Path(settings.BM25_PATH)
+            if not bm25_path.exists():
+                raise ConfigurationError("BM25 index not found.")
+                
+            with open(bm25_path, "rb") as f:
+                bm25_retriever = pickle.load(f)
+            
+            # Update BM25 k parameter if needed (usually set during creation, but can be tweaked)
+            bm25_retriever.k = settings.RETRIEVAL_K
+
+            # 4. Ensemble
+            ensemble_retriever = EnsembleRetriever(
+                retrievers=[bm25_retriever, faiss_retriever],
+                weights=[0.4, 0.6] # Adjust weights as needed
+            )
+            
+            logger.info("Hybrid Retriever initialized successfully.")
+            return ensemble_retriever
+
+        except Exception as e:
+            logger.error(f"Failed to initialize RetrievalService: {str(e)}")
+            raise e
+
+    def retrieve(self, query: str) -> List[Document]:
+        """
+        Retrieve relevant documents for a given query.
+        """
+        return self.retriever.invoke(query)

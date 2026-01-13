@@ -5,39 +5,44 @@ This module provides a centralized logger with consistent formatting and log lev
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
+
+# Import settings to get the environment and log level
+from heartsafe_rag.config import settings
 
 
 class ContextFilter(logging.Filter):
     """Custom filter to add contextual information to log records.
 
-    This allows adding fields like 'environment' to every log message.
+    This ensures the 'environment' field is available in every log record,
+    even for third-party loggers that don't know about this field.
     """
     def __init__(self, environment: str = "unknown"):
         super().__init__()
         self.environment = environment
 
     def filter(self, record: logging.LogRecord) -> bool:
-        record.environment = self.environment
+        if not hasattr(record, 'environment'):
+            record.environment = self.environment
         return True
 
 
 def setup_logger(
     name: str,
-    log_level: str = "INFO",
-    log_file: Path | None = None,
+    log_level: str = settings.LOG_LEVEL,
+    log_file: Path | None = settings.LOG_FILE,
 ) -> logging.Logger:
     """Configure and return a logger with specified settings.
 
     Args:
         name: Name of the logger (usually __name__).
-        log_level: Logging level (e.g., logging.INFO, logging.DEBUG).
-        log_file: Optional path to a log file. If not provided, logs to stderr.
+        log_level: Logging level (defaults to settings.LOG_LEVEL).
+        log_file: Optional path to a log file.
 
     Returns:
         Configured logger instance.
     """
     logger = logging.getLogger(name)
+    
     # Convert string log level to logging constant
     log_level_numeric = getattr(logging, log_level.upper(), logging.INFO)
     logger.setLevel(log_level_numeric)
@@ -46,7 +51,12 @@ def setup_logger(
     if logger.handlers:
         return logger
 
-    # Updated formatter to include environment (if filter is added later)
+    # --- CRITICAL FIX: Initialize and Add the Filter ---
+    env_filter = ContextFilter(environment=settings.ENVIRONMENT)
+    logger.addFilter(env_filter)
+    # ---------------------------------------------------
+
+    # Formatter including the environment field
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(environment)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
@@ -55,6 +65,7 @@ def setup_logger(
     # Console handler
     console_handler = logging.StreamHandler(sys.stderr)
     console_handler.setFormatter(formatter)
+    console_handler.addFilter(env_filter)  # Add filter to handler as well for safety
     logger.addHandler(console_handler)
 
     # File handler if log file is specified
@@ -62,10 +73,11 @@ def setup_logger(
         log_file.parent.mkdir(parents=True, exist_ok=True)
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(formatter)
+        file_handler.addFilter(env_filter) # Add filter to handler
         logger.addHandler(file_handler)
 
     return logger
 
 
 # Default logger instance
-logger = setup_logger(__name__)
+logger = setup_logger("heartsafe_rag")

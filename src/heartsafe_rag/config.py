@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import List
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic.types import DirectoryPath
@@ -22,24 +23,28 @@ class Settings(BaseSettings):
     LOG_FILE: Path | None = None
 
     # Data directories
-    DATA_DIR: DirectoryPath = Path("data")
+    # Validates that 'data' exists, creates it if not (via validator below)
+    DATA_DIR: DirectoryPath = Path("data") 
+    
+    # Paths for indices
+    # We use 'vector_store' for the FAISS folder
+    VECTOR_DB_PATH: Path = Path("data/vector_store")
+    BM25_PATH: Path = Path("data/bm25_index.pkl")
 
     # LLM settings
-    # MyPy complains if required fields don't have defaults during instantiation.
-    # We use '...' to mark it required, but handle the mypy error at the bottom.
+    # Pydantic will automatically read GROQ_API_KEY from .env
     GROQ_API_KEY: SecretStr = Field(..., description="Groq API Key")
-    LLM_MODEL: str = "meta-llama/llama-3.2-11b-vision-preview"
+    LLM_MODEL: str = "llama-3.3-70b-versatile"
     LLM_TEMPERATURE: float = 0.0
 
-    # RAG settings
+    # RAG Ingestion settings
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 100
+    CHUNK_SEPARATORS: List[str] = ["\n\n", "\n", ". ", " ", ""]
 
-    # Embedding model
+    # Retrieval settings
+    RETRIEVAL_K: int = 3  # <--- ADDED THIS (Required for retrieval.py)
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
-
-    # Text Splitter Separators (Renamed to match chunking.py expectation)
-    CHUNK_SEPARATORS: list[str] = ["\n\n", "\n", ". ", " ", ""]
 
     @field_validator("LOG_LEVEL")
     @classmethod
@@ -56,5 +61,7 @@ class Settings(BaseSettings):
             os.makedirs(v, exist_ok=True)
         return v
 
-# Initialize settings with GROQ_API_KEY from environment as SecretStr
-settings = Settings(GROQ_API_KEY=SecretStr(os.getenv("GROQ_API_KEY", "")))
+# Initialize settings. 
+# BaseSettings automatically reads from os.environ and .env file.
+# We don't need to manually pass the key here unless we want to override it.
+settings = Settings()
