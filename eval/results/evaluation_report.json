@@ -1,0 +1,135 @@
+{
+  "metrics": {
+    "total_cases": 15,
+    "evaluated_cases": 15,
+    "accuracy": 76.66666666666667,
+    "average_score": 0.7666666666666667
+  },
+  "results": [
+    {
+      "id": "1",
+      "question": "What are the four medication classes included in guideline-directed medical therapy (GDMT) for heart failure with reduced ejection fraction (HFrEF)?",
+      "expected": "The four medication classes are: 1) renin-angiotensin system inhibition with angiotensin receptor-neprilysin inhibitors (ARNi), angiotensin-converting enzyme inhibitors (ACEi), or angiotensin (II) receptor blockers (ARB) alone; 2) beta blockers; 3) mineralocorticoid receptor antagonists (MRAs); and 4) sodium-glucose cotransporter-2 inhibitors (SGLT2i).",
+      "actual": "The four medication classes included in guideline-directed medical therapy (GDMT) for heart failure with reduced ejection fraction (HFrEF) are:\n\n1. Renin-angiotensin system inhibition with angiotensin receptor-neprilysin inhibitors (ARNi), angiotensin-converting enzyme inhibitors (ACEi), or angiotensin (II) receptor blockers (ARB) alone\n2. Beta blockers\n3. Mineralocorticoid receptor antagonists (MRAs)\n4. Sodium-glucose cotransporter 2 inhibitors (SGLT2i)",
+      "score": 1.0,
+      "reasoning": "The actual answer matches the expected answer, containing all four medication classes for guideline-directed medical therapy (GDMT) for heart failure with reduced ejection fraction (HFrEF), including renin-angiotensin system inhibition, beta blockers, mineralocorticoid receptor antagonists (MRAs), and sodium-glucose cotransporter-2 inhibitors (SGLT2i), with no contradictions or missing critical guidelines."
+    },
+    {
+      "id": "2",
+      "question": "How is 'Improved LVEF' (HFimpEF) defined in the 2022 guideline?",
+      "expected": "Improved LVEF refers to patients with previous HFrEF (LVEF ≤40%) who now have an LVEF >40%.",
+      "actual": "According to the provided context, 'Improved LVEF' (HFimpEF) is defined as patients with previous HFrEF (Heart Failure with reduced Ejection Fraction) who now have an LVEF (Left Ventricular Ejection Fraction) >40%. This is stated in two places in the context: under \"TAKE-HOME MESSAGE NO. 4\" and as part of the \"Type of HF According to LVEF Criteria\" section, where HFimpEF is specifically defined as \"Previous LVEF #40% and a follow-up measurement of LVEF >40%\".",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical fact that 'Improved LVEF' (HFimpEF) refers to patients with previous HFrEF who now have an LVEF >40%, which aligns with the expected answer. It provides additional context but does not contradict the expected answer, ensuring both correctness and safety."
+    },
+    {
+      "id": "3",
+      "question": "What is the Class of Recommendation for SGLT2i in patients with heart failure with mildly reduced ejection fraction (HFmrEF)?",
+      "expected": "SGLT2i have a Class of Recommendation 2a in heart failure with mildly reduced ejection fraction (HFmrEF).",
+      "actual": "The Class of Recommendation for SGLT2i in patients with heart failure with mildly reduced ejection fraction (HFmrEF) is 2a.",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical fact found in the expected answer, does not contradict it, and does not miss any critical guidelines, thus meeting the criteria for correctness, safety, and completeness."
+    },
+    {
+      "id": "4",
+      "question": "What are the revised terminologies for Stage A and Stage B heart failure?",
+      "expected": "Stage A is now termed 'at-risk for HF' and Stage B is termed 'pre-HF'.",
+      "actual": "The revised terminologies for Stage A and Stage B heart failure are:\n\n- Stage A: \"At-risk for HF\"\n- Stage B: \"Pre-HF\"",
+      "score": 1.0,
+      "reasoning": "The actual answer accurately matches the expected answer, providing the revised terminologies for Stage A and Stage B heart failure as 'at-risk for HF' and 'pre-HF', respectively, without any contradictions or omissions of critical guidelines."
+    },
+    {
+      "id": "5",
+      "question": "What is the definition of 'High Value' in the guideline's value statements?",
+      "expected": "High value is defined as <$60,000 per quality-adjusted life year (QALY) gained, which is less than 1 U.S. GDP per capita per QALY.",
+      "actual": "In the guideline's value statements, 'High Value' refers to healthcare services that provide the best possible outcomes and care for patients, while also being cost-effective and efficient, resulting in the optimal use of resources.",
+      "score": 0.0,
+      "reasoning": "The actual answer does not contain the core clinical fact of '<$60,000 per quality-adjusted life year (QALY) gained' and 'less than 1 U.S. GDP per capita per QALY' as defined in the expected answer, making it incomplete and potentially misleading."
+    },
+    {
+      "id": "6",
+      "question": "Which therapy was identified as 'low value' in the 2022 heart failure guideline?",
+      "expected": "Tafamidis for cardiac amyloidosis was the only therapy identified as low value.",
+      "actual": "The therapy identified as 'low value' in the 2022 heart failure guideline is tafamidis for cardiac amyloidosis.",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical fact found in the expected answer, does not contradict it, and does not miss any critical guidelines."
+    },
+    {
+      "id": "7",
+      "question": "What is the recommended screening for patients with a clinical suspicion of cardiac amyloidosis?",
+      "expected": "Screening should include serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains.",
+      "actual": "According to the provided context, the recommended screening for patients with a clinical suspicion of cardiac amyloidosis is:\n\nScreening for serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains.",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical facts found in the expected answer, does not contradict it, and includes all critical guidelines mentioned."
+    },
+    {
+      "id": "8",
+      "question": "When is an implantable cardioverter-defibrillator (ICD) recommended for primary prevention in Stage B patients?",
+      "expected": "An ICD is recommended for patients who are at least 40 days post-myocardial infarction with LVEF ≤30% and NYHA class I symptoms while receiving GDMT, with a reasonable expectation of survival for >1 year.",
+      "actual": "The guidelines do not contain this information. The context only mentions the recommendation for an implantable cardioverter-defibrillator (ICD) for primary prevention in patients who are at least 40 days post-myocardial infarction with LVEF ≤30% and NYHA class I symptoms, but it does not specifically address Stage B patients.",
+      "score": 0.0,
+      "reasoning": "The actual answer fails to provide the core clinical facts found in the expected answer, specifically the recommendation for ICD in Stage B patients with LVEF ≤30% and NYHA class I symptoms, and instead states that the guidelines do not contain this information, which is incorrect and incomplete."
+    },
+    {
+      "id": "9",
+      "question": "What is the recommendation for the use of thiazolidinediones in patients with LVEF <50%?",
+      "expected": "Thiazolidinediones should not be used because they increase the risk of heart failure, including hospitalizations (Class 3: Harm).",
+      "actual": "According to the provided context, the recommendation for the use of thiazolidinediones in patients with LVEF <50% is:\n\n3: Harm B-R\n7. In patients with LVEF <50%, thiazolidinediones should not be used because they increase the risk of HF, including hospitalizations.",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical fact that thiazolidinediones should not be used in patients with LVEF <50% due to an increased risk of heart failure, matching the expected answer. It does not contradict the expected answer and includes the critical guideline."
+    },
+    {
+      "id": "10",
+      "question": "What is the Class of Recommendation for intravenous iron replacement in patients with HFrEF and iron deficiency?",
+      "expected": "Intravenous iron replacement has a Class of Recommendation 2a to improve functional status and quality of life.",
+      "actual": "The Class of Recommendation for intravenous iron replacement in patients with HFrEF and iron deficiency is 2a.",
+      "score": 0.5,
+      "reasoning": "The actual answer contains the core clinical fact about the Class of Recommendation (2a) but lacks completeness by missing the critical guideline that intravenous iron replacement is intended to improve functional status and quality of life, as mentioned in the expected answer."
+    },
+    {
+      "id": "11",
+      "question": "Which medication is recommended for the management of hyperglycemia in patients with heart failure and type 2 diabetes to reduce HF-related morbidity and mortality?",
+      "expected": "The use of SGLT2i is recommended.",
+      "actual": "According to the context, the medication recommended for the management of hyperglycemia in patients with heart failure and type 2 diabetes to reduce HF-related morbidity and mortality is SGLT2i (sodium-glucose cotransporter 2 inhibitor). This is stated in recommendation 7: \"In patients with HF and type 2 diabetes, the use of SGLT2i is recommended for the management of hyperglycemia and to reduce HF-related morbidity and mortality.\"",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical fact found in the expected answer, recommending SGLT2i for the management of hyperglycemia in patients with heart failure and type 2 diabetes. It does not contradict the expected answer and provides additional context from a recommendation, ensuring completeness and safety."
+    },
+    {
+      "id": "12",
+      "question": "What is the recommendation regarding the use of erythropoietin-stimulating agents in patients with heart failure and anemia?",
+      "expected": "Erythropoietin-stimulating agents should not be used to improve morbidity and mortality (Class 3: Harm).",
+      "actual": "The recommendation regarding the use of erythropoietin-stimulating agents in patients with heart failure and anemia is that they should not be used to improve morbidity and mortality (155,156).",
+      "score": 1.0,
+      "reasoning": "The actual answer matches the expected answer, stating that erythropoietin-stimulating agents should not be used to improve morbidity and mortality in patients with heart failure and anemia, aligning with the Class 3: Harm recommendation."
+    },
+    {
+      "id": "13",
+      "question": "What is the threshold for NT-proBNP to suggest increased filling pressures as listed in Appendix 1?",
+      "expected": "The threshold for NT-proBNP is ≥125 pg/mL.",
+      "actual": "The threshold for NT-proBNP to suggest increased filling pressures is >125 pg/mL.",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical fact found in the expected answer, does not contradict it, and does not miss any critical guidelines. The slight difference in notation ('≥' vs '>') does not affect the clinical interpretation in this context."
+    },
+    {
+      "id": "14",
+      "question": "For patients with heart failure and central sleep apnea, what is the recommendation regarding adaptive servo-ventilation?",
+      "expected": "Adaptive servo-ventilation causes harm in patients with NYHA class II to IV HFrEF and central sleep apnea (Class 3: Harm).",
+      "actual": "For patients with heart failure and central sleep apnea, specifically those with NYHA class II to IV HFrEF, the recommendation is that adaptive servo-ventilation causes harm. This is classified as \"Harm B-R\" and is supported by references 162 and 163.",
+      "score": 1.0,
+      "reasoning": "The actual answer contains the core clinical facts found in the expected answer, does not contradict it, and includes the necessary classification and reference support, ensuring correctness, safety, and completeness."
+    },
+    {
+      "id": "15",
+      "question": "What is the recommendation for patients with HFrEF and hypertension regarding GDMT?",
+      "expected": "Uptitration of GDMT to the maximally tolerated target dose is recommended.",
+      "actual": "The guidelines do not contain this specific information. However, it is mentioned that in patients with hypertension, blood pressure should be controlled in accordance with GDMT for hypertension to prevent symptomatic HF (Recommendation 1A). Additionally, it is stated that GDMT for heart failure (HF) with reduced ejection fraction (HFrEF) now includes 4 medication classes, but the specific recommendation for patients with HFrEF and hypertension is not provided.",
+      "score": 0.0,
+      "reasoning": "The actual answer does not contain the core clinical fact found in the expected answer, which is the recommendation for uptitration of GDMT to the maximally tolerated target dose for patients with HFrEF and hypertension. The actual answer misses this critical guideline and instead provides unrelated information, making it incomplete and incorrect."
+    }
+  ],
+  "config": {
+    "model": "llama-3.3-70b-versatile",
+    "temperature": 0.0,
+    "dataset": "eval\\data\\golden_dataset.json"
+  }
+}

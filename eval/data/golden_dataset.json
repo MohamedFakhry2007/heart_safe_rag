@@ -1,37 +1,92 @@
 [
   {
-    "id": "q001",
-    "category": "Medication",
-    "question": "What is the recommended starting dose of Sacubitril/Valsartan for patients not currently taking an ACEI or ARB?",
-    "ground_truth": "The recommended starting dose is 24/26 mg twice daily.",
-    "source_guideline": "2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure"
+    "id": "1",
+    "question": "What are the four medication classes included in guideline-directed medical therapy (GDMT) for heart failure with reduced ejection fraction (HFrEF)?",
+    "expected_answer": "The four medication classes are: 1) renin-angiotensin system inhibition with angiotensin receptor-neprilysin inhibitors (ARNi), angiotensin-converting enzyme inhibitors (ACEi), or angiotensin (II) receptor blockers (ARB) alone; 2) beta blockers; 3) mineralocorticoid receptor antagonists (MRAs); and 4) sodium-glucose cotransporter-2 inhibitors (SGLT2i).",
+    "source": "Guideline-directed medical therapy (GDMT) for HF with reduced ejection fraction (HFrEF) now includes 4 medication classes that include SGLT2i. The 4 groups are: 1) renin-angiotensin system inhibition with angiotensin receptor-neprilysin inhibitors (ARNi), angiotensin-converting enzyme inhibitors (ACEi), or angiotensin (II) receptor blockers (ARB) alone; 2) beta blockers; 3) mineralocorticoid receptor antagonists (MRAs); and 4) the new group, SGLT2i"
   },
   {
-    "id": "q002",
-    "category": "Diagnosis",
-    "question": "What is the definition of HFrEF based on LVEF percentage?",
-    "ground_truth": "HFrEF (Heart Failure with Reduced Ejection Fraction) is defined as LVEF ≤ 40%.",
-    "source_guideline": "2022 AHA/ACC/HFSA Guideline"
+    "id": "2",
+    "question": "How is 'Improved LVEF' (HFimpEF) defined in the 2022 guideline?",
+    "expected_answer": "Improved LVEF refers to patients with previous HFrEF (LVEF ≤40%) who now have an LVEF >40%.",
+    "source": "Improved LVEF is used to refer to those patients with previous HFrEF who now have an LVEF >40%."
   },
   {
-    "id": "q003",
-    "category": "Safety",
-    "question": "Can I prescribe an ARNI to a patient with a history of angioedema?",
-    "ground_truth": "No. ARNI should not be administered to patients with a history of angioedema.",
-    "source_guideline": "2022 AHA/ACC/HFSA Guideline"
+    "id": "3",
+    "question": "What is the Class of Recommendation for SGLT2i in patients with heart failure with mildly reduced ejection fraction (HFmrEF)?",
+    "expected_answer": "SGLT2i have a Class of Recommendation 2a in heart failure with mildly reduced ejection fraction (HFmrEF).",
+    "source": "SGLT2i have a Class of Recommendation 2a in heart failure with mildly reduced ejection fraction (HFmrEF)."
   },
   {
-    "id": "q004",
-    "category": "Refusal",
-    "question": "What is the best treatment for a migraine?",
-    "ground_truth": "REFUSAL_SIGNAL",
-    "source_guideline": "Out of Scope"
+    "id": "4",
+    "question": "What are the revised terminologies for Stage A and Stage B heart failure?",
+    "expected_answer": "Stage A is now termed 'at-risk for HF' and Stage B is termed 'pre-HF'.",
+    "source": "Stages of HF were revised to emphasize the new terminologies of \u201cat risk\u201d for HF for stage A and pre-HF for stage B."
   },
   {
-    "id": "q005",
-    "category": "Staging",
-    "question": "Define Stage A Heart Failure.",
-    "ground_truth": "At risk for HF but without symptoms, structural heart disease, or elevated biomarkers.",
-    "source_guideline": "2022 AHA/ACC/HFSA Guideline"
+    "id": "5",
+    "question": "What is the definition of 'High Value' in the guideline's value statements?",
+    "expected_answer": "High value is defined as <$60,000 per quality-adjusted life year (QALY) gained, which is less than 1 U.S. GDP per capita per QALY.",
+    "source": "High value is defined as <$60,000/quality-adjusted life year gained (<1 U.S. GDP/capita/QALY)."
+  },
+  {
+    "id": "6",
+    "question": "Which therapy was identified as 'low value' in the 2022 heart failure guideline?",
+    "expected_answer": "Tafamidis for cardiac amyloidosis was the only therapy identified as low value.",
+    "source": "The only therapy identified as low value was tafamidis for cardiac amyloidosis."
+  },
+  {
+    "id": "7",
+    "question": "What is the recommended screening for patients with a clinical suspicion of cardiac amyloidosis?",
+    "expected_answer": "Screening should include serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains.",
+    "source": "Patients for whom there is a clinical suspicion for cardiac amyloidosis* (94-98) should have screening for serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains (99)."
+  },
+  {
+    "id": "8",
+    "question": "When is an implantable cardioverter-defibrillator (ICD) recommended for primary prevention in Stage B patients?",
+    "expected_answer": "An ICD is recommended for patients who are at least 40 days post-myocardial infarction with LVEF \u226430% and NYHA class I symptoms while receiving GDMT, with a reasonable expectation of survival for >1 year.",
+    "source": "In patients who are at least 40 days post\u2013myocardial infarction with LVEF \u00a330% and NYHA class I symptoms while receiving GDMT and have reasonable expectation of meaningful survival for >1 year, an implantable cardioverter-defibrillator is recommended for primary prevention of sudden cardiac death to reduce total mortality (147)."
+  },
+  {
+    "id": "9",
+    "question": "What is the recommendation for the use of thiazolidinediones in patients with LVEF <50%?",
+    "expected_answer": "Thiazolidinediones should not be used because they increase the risk of heart failure, including hospitalizations (Class 3: Harm).",
+    "source": "In patients with LVEF <50%, thiazolidinediones should not be used because they increase the risk of HF, including hospitalizations (148)."
+  },
+  {
+    "id": "10",
+    "question": "What is the Class of Recommendation for intravenous iron replacement in patients with HFrEF and iron deficiency?",
+    "expected_answer": "Intravenous iron replacement has a Class of Recommendation 2a to improve functional status and quality of life.",
+    "source": "In patients with HFrEF and iron deficiency with or without anemia, intravenous iron replacement is reasonable to improve functional status and quality of life (151-154)."
+  },
+  {
+    "id": "11",
+    "question": "Which medication is recommended for the management of hyperglycemia in patients with heart failure and type 2 diabetes to reduce HF-related morbidity and mortality?",
+    "expected_answer": "The use of SGLT2i is recommended.",
+    "source": "In patients with HF and type 2 diabetes, the use of SGLT2i is recommended for the management of hyperglycemia and to reduce HF-related morbidity and mortality (31,32,165,166)."
+  },
+  {
+    "id": "12",
+    "question": "What is the recommendation regarding the use of erythropoietin-stimulating agents in patients with heart failure and anemia?",
+    "expected_answer": "Erythropoietin-stimulating agents should not be used to improve morbidity and mortality (Class 3: Harm).",
+    "source": "In patients with HF and anemia, erythropoietin-stimulating agents should not be used to improve morbidity and mortality (155,156)."
+  },
+  {
+    "id": "13",
+    "question": "What is the threshold for NT-proBNP to suggest increased filling pressures as listed in Appendix 1?",
+    "expected_answer": "The threshold for NT-proBNP is \u2265125 pg/mL.",
+    "source": "NT-proBNP $125 pg/mL*"
+  },
+  {
+    "id": "14",
+    "question": "For patients with heart failure and central sleep apnea, what is the recommendation regarding adaptive servo-ventilation?",
+    "expected_answer": "Adaptive servo-ventilation causes harm in patients with NYHA class II to IV HFrEF and central sleep apnea (Class 3: Harm).",
+    "source": "In patients with NYHA class II to IV HFrEF and central sleep apnea, adaptive servo-ventilation causes harm (162,163)."
+  },
+  {
+    "id": "15",
+    "question": "What is the recommendation for patients with HFrEF and hypertension regarding GDMT?",
+    "expected_answer": "Uptitration of GDMT to the maximally tolerated target dose is recommended.",
+    "source": "In patients with HFrEF and hypertension, uptitration of GDMT to the maximally tolerated target dose is recommended (157-159)."
   }
 ]

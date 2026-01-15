@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 from pathlib import Path
 from typing import List
@@ -6,6 +7,7 @@ from pydantic import Field, SecretStr, field_validator
 from pydantic.types import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+load_dotenv()
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -30,6 +32,11 @@ class Settings(BaseSettings):
     # We use 'vector_store' for the FAISS folder
     VECTOR_DB_PATH: Path = Path("data/vector_store")
     BM25_PATH: Path = Path("data/bm25_index.pkl")
+    
+    # Langfuse Tracing
+    LANGFUSE_PUBLIC_KEY: str = Field(..., description="Langfuse Public Key")
+    LANGFUSE_SECRET_KEY: SecretStr = Field(..., description="Langfuse Secret Key")
+    LANGFUSE_HOST: str = "https://cloud.langfuse.com"
 
     # LLM settings
     # Pydantic will automatically read GROQ_API_KEY from .env
@@ -43,7 +50,7 @@ class Settings(BaseSettings):
     CHUNK_SEPARATORS: List[str] = ["\n\n", "\n", ". ", " ", ""]
 
     # Retrieval settings
-    RETRIEVAL_K: int = 3  # <--- ADDED THIS (Required for retrieval.py)
+    RETRIEVAL_K: int = 7
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
 
     @field_validator("LOG_LEVEL")
