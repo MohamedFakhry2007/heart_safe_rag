@@ -19,20 +19,20 @@ A Retrieval-Augmented Generation (RAG) system for zero-hallucination heart failu
 ## 🏗️ Architecture
 
 ```mermaid
-graph TB
+flowchart TB
     subgraph "Offline Processing"
         A[Guideline PDFs] --> B[Document Loading]
         B --> C[Recursive Chunking]
-        C --> D[Embedding (HuggingFace)]
+        C --> D[Embedding\nHuggingFace]
         D --> E[FAISS Index + BM25]
     end
     
     subgraph "Online Serving"
-        F[User Query] --> G[Router (Classifier)]
-        G -- "HF Related" --> H[Hybrid Retrieval]
-        G -- "General" --> K[Direct Response]
-        H --> I[LLM Generation (Llama-3)]
-        I --> J[Response with Citations]
+        F[User Query] --> G[Router\nClassifier]
+        G -->|HF Related| H[Hybrid Retrieval]
+        G -->|General| K[Direct Response]
+        H --> I[LLM Generation\nLlama-3]
+        I --> J[Response with\nCitations]
     end
 
 ## 🛠️ Installation
