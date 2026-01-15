@@ -5,117 +5,132 @@ A Retrieval-Augmented Generation (RAG) system for zero-hallucination heart failu
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Langfuse](https://img.shields.io/badge/Langfuse-Observability-orange)](https://langfuse.com)
 
 ## 🚀 Features
 
-- **Evidence-Based Responses**: Every response is grounded in AHA/ACC Heart Failure Guidelines
-- **Zero Hallucinations**: Strict retrieval enforcement ensures no made-up information
-- **Hybrid Retrieval**: Combines semantic search (FAISS) with keyword matching (BM25)
-- **Reproducible**: Deterministic behavior across deployments
-- **Production-Ready**: FastAPI backend with health checks and monitoring
-- **Comprehensive Evaluation**: Built-in evaluation framework for model performance
+- **Evidence-Based Responses**: Every response is grounded in 2022 AHA/ACC Heart Failure Guidelines.
+- **Zero Hallucinations**: Strict retrieval enforcement ensures no made-up information; the model refuses to answer if guidelines are missing.
+- **Hybrid Retrieval**: Combines semantic search (FAISS) with keyword matching (BM25) for high-precision context fetching.
+- **Evaluation Pipeline**: Integrated "LLM-as-a-Judge" workflow using Langfuse for tracking correctness, safety, and guideline adherence over time.
+- **Production-Ready**: FastAPI backend with health checks, structured logging, and Docker support.
+- **User Interface**: Built-in chat interface for easy interaction.
 
 ## 🏗️ Architecture
 
 ```mermaid
 graph TB
     subgraph "Offline Processing"
-        A[Guideline Documents] --> B[Document Loaders]
-        B --> C[Text Chunker]
-        C --> D[Embedding Generator]
-        D --> E[FAISS Index]
+        A[Guideline PDFs] --> B[Document Loading]
+        B --> C[Recursive Chunking]
+        C --> D[Embedding (HuggingFace)]
+        D --> E[FAISS Index + BM25]
     end
     
     subgraph "Online Serving"
-        F[User Query] --> G[Query Understanding]
-        G --> H[Hybrid Retrieval]
-        H --> I[Response Generation]
+        F[User Query] --> G[Router (Classifier)]
+        G -- "HF Related" --> H[Hybrid Retrieval]
+        G -- "General" --> K[Direct Response]
+        H --> I[LLM Generation (Llama-3)]
         I --> J[Response with Citations]
     end
-```
 
 ## 🛠️ Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/MohamedFakhry2007/heart_safe_rag.git
-   cd heart_safe_rag
-   ```
+### Clone the repository
 
-2. **Install dependencies**
-   ```bash
-   # Install Poetry if you don't have it
-   pip install poetry
-   
-   # Install project dependencies
-   poetry install
-   ```
+```bash
+git clone https://github.com/MohamedFakhry2007/heart_safe_rag.git
+cd heart_safe_rag
+```
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys and configurations
-   ```
+### Install dependencies
+
+```bash
+# Install Poetry if you don't have it
+pip install poetry
+
+# Install project dependencies
+poetry install
+```
+
+### Set up environment variables
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your keys:
+
+```env
+GROQ_API_KEY=gsk_...
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
 
 ## 🚀 Quick Start
 
-1. **Ingest Guidelines**
-   ```bash
-   poetry run python ingest.py "data/guidelines/aha_guidelines_2022.pdf" --output-dir "faiss_index" --verbose
-   ```
-
-2. **Start the API server**
-   ```bash
-   poetry run uvicorn heartsafe_rag.api:app --reload
-   ```
-
-3. **Query the API**
-   ```bash
-   curl -X POST "http://localhost:8000/chat" \
-        -H "Content-Type: application/json" \
-        -d '{"query": "What are the latest guidelines for heart failure management?"}'
-   ```
-
-## 🧪 Running Tests
+### 1. Ingest Guidelines
+Parse the PDFs and build the vector index.
 
 ```bash
-# Run all tests
-poetry run pytest
+poetry run python src/heartsafe_rag/ingest.py
+```
 
-# Run tests with coverage
-poetry run pytest --cov=heartsafe_rag tests/
+### 2. Start the API Server
+Launch the backend and the Chat UI.
+
+```bash
+poetry run uvicorn heartsafe_rag.api:app --reload
+```
+
+- **Chat UI**: Open http://localhost:8000 in your browser
+- **API Docs**: Open http://localhost:8000/docs
+
+### 3. Run Evaluations (The "Judge")
+Run the Golden Dataset against the current pipeline and log results to Langfuse.
+
+```bash
+poetry run python src/heartsafe_rag/evaluate.py
+```
+
+## 🧪 Testing
+
+```bash
+# Run unit and integration tests
+poetry run pytest
 ```
 
 ## 📂 Project Structure
 
-```
 .
-├── data/                   # Data and guideline documents
-│   └── guidelines/         # AHA/ACC guideline documents
-├── faiss_index/            # FAISS vector store
-├── prompts/                # Prompt templates
-├── eval/                   # Evaluation scripts and datasets
-│   └── data/               # Golden dataset for evaluation
-├── src/                    # Source code
-│   └── heartsafe_rag/      # Main package
-│       ├── api.py          # FastAPI application
-│       ├── generation.py   # Response generation logic
-│       ├── retrieval.py    # Document retrieval components
-│       └── utils/          # Utility functions
-├── tests/                  # Test suite
-├── .env.example            # Example environment variables
-├── pyproject.toml          # Project dependencies
-└── README.md               # This file
-```
+├── data/                   # Data storage
+│   ├── raw_pdfs/           # PDF Guidelines source
+│   ├── vector_store/       # Generated FAISS Index
+│   └── bm25_index.pkl      # Generated Keyword Index
+├── eval/                   # Evaluation Suite
+│   ├── data/               # Golden Datasets (QA pairs)
+│   └── results/            # Local evaluation reports
+├── src/                    # Source Code
+│   └── heartsafe_rag/
+│       ├── api.py          # FastAPI endpoints & UI
+│       ├── config.py       # Pydantic Settings
+│       ├── evaluate.py     # LLM Judge & Langfuse Experiment Runner
+│       ├── generation.py   # LLM Chains & Routing Logic
+│       ├── ingest.py       # ETL Pipeline
+│       ├── retrieval.py    # Hybrid Search Logic
+│       └── utils/          # Logger & Helpers
+├── templates/              # HTML Templates for UI
+├── tests/                  # Pytest Suite
+└── docker-compose.yml      # Container Orchestration
 
 ## 📚 Documentation
 
-For detailed documentation, please refer to:
-
-- [Design Document](design.md) - System architecture and design decisions
-- [API Documentation](#) - Auto-generated API docs (available when running locally)
+- **LLM**: Llama-3-70b (via Groq) for high-fidelity medical reasoning
+- **Embeddings**: all-MiniLM-L6-v2 for efficient semantic search
+- **Observability**: Full trace logging via Langfuse
 
 ## 🙏 Acknowledgments
 
-- American Heart Association (AHA) and American College of Cardiology (ACC) for their heart failure guidelines
-- The open-source community for the amazing tools and libraries that made this project possible
+American Heart Association (AHA) and American College of Cardiology (ACC) for the clinical source material.

@@ -6,7 +6,7 @@ Handles LLM interaction with intelligent routing:
 - General queries -> Direct LLM response
 """
 
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from langchain_groq import ChatGroq
 from langfuse.langchain import CallbackHandler
@@ -86,13 +86,23 @@ class GenerationService:
         self,
         query: str,
         context_docs: Optional[List[Document]] = None,
+        callbacks: Optional[List[Any]] = None,
     ) -> str:
         """
         Generate a response with Langfuse tracing enabled.
+        
+        Args:
+            query: The user's question.
+            context_docs: List of documents for RAG (if applicable).
+            callbacks: Optional list of LangChain callbacks. 
+                       If None, a default Langfuse CallbackHandler is created.
+                       Pass this from evaluate.py to link traces to experiments.
         """
 
-        # ✅ Correct Langfuse handler (v2/v3)
-        langfuse_handler = CallbackHandler()
+        # Use provided callbacks (for eval) or create default handler (for production)
+        if callbacks is None:
+            # ✅ Correct Langfuse handler (v2/v3)
+            callbacks = [CallbackHandler()]
 
         category = self.route_query(query)
 
@@ -107,10 +117,10 @@ class GenerationService:
 
             return self.rag_chain.invoke(
                 {"context": context_text, "question": query},
-                config={"callbacks": [langfuse_handler]},
+                config={"callbacks": callbacks},
             )
 
         return self.direct_chain.invoke(
             {"question": query},
-            config={"callbacks": [langfuse_handler]},
+            config={"callbacks": callbacks},
         )

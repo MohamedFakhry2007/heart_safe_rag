@@ -18,7 +18,6 @@ from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
-from langfuse.decorators import observe
 
 # Project modules
 from heartsafe_rag.config import settings
@@ -149,7 +148,6 @@ class RetrievalService:
             logger.error(f"Failed to initialize RetrievalService: {str(e)}")
             raise e
 
-    @observe(as_type="retrieval")
     def retrieve(self, query: str) -> List[Document]:
         """
         Retrieve relevant documents for a given query.
