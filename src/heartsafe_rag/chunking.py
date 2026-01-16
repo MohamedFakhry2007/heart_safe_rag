@@ -23,10 +23,7 @@ class GuidelineChunker:
     """
 
     def __init__(
-        self,
-        chunk_size: int | None = None,
-        chunk_overlap: int | None = None,
-        separators: list[str] | None = None
+        self, chunk_size: int | None = None, chunk_overlap: int | None = None, separators: list[str] | None = None
     ):
         """Initialize the chunker with specific size and overlap settings."""
         self.chunk_size = chunk_size or settings.CHUNK_SIZE
@@ -48,19 +45,15 @@ class GuidelineChunker:
         filename = os.path.basename(source_path)
 
         # Regex to find a year (e.g., 2022, 2024, 1999)
-        year_match = re.search(r'(199\d|20[0-2]\d)', filename)
+        year_match = re.search(r"(199\d|20[0-2]\d)", filename)
         year = int(year_match.group(0)) if year_match else None
 
-        return {
-            "source": filename,
-            "guideline_year": year if year else "Unknown",
-            "processed_type": "guideline_text"
-        }
+        return {"source": filename, "guideline_year": year if year else "Unknown", "processed_type": "guideline_text"}
 
     def _clean_content(self, text: str) -> str:
         """Sanitizes text to remove PDF artifacts."""
         # Collapse excessive vertical whitespace
-        text = re.sub(r'\n{3,}', '\n\n', text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
         return text.strip()
 
     def split_documents(self, documents: list[Document]) -> list[Document]:
@@ -85,10 +78,7 @@ class GuidelineChunker:
                 chunk.metadata["chunk_id"] = i
                 final_chunks.append(chunk)
 
-            logger.info(
-                f"Chunking Complete. "
-                f"Input Pages: {len(documents)} -> Output Chunks: {len(final_chunks)}"
-            )
+            logger.info(f"Chunking Complete. Input Pages: {len(documents)} -> Output Chunks: {len(final_chunks)}")
             return final_chunks
 
         except Exception as e:

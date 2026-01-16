@@ -2,6 +2,7 @@
 Ingestion logic for HeartSafe RAG.
 Handles PDF processing, Vision-LLM analysis, and Vector Store creation.
 """
+
 import base64
 import io
 import time
@@ -27,20 +28,27 @@ vision_llm = ChatGroq(
     temperature=settings.LLM_TEMPERATURE,
 )
 
+
 def _encode_image(pil_image: Image.Image) -> str:
     """Helper: Convert PIL image to base64 string."""
     buffered = io.BytesIO()
     pil_image.save(buffered, format="JPEG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
+
 def _analyze_image_content(pil_image: Image.Image) -> str:
     """Helper: Send image to Groq Vision for description."""
     try:
         base64_image = _encode_image(pil_image)
-        msg = HumanMessage(content=[
-            {"type": "text", "text": "Analyze this medical image/chart. Transcribe logic/tables in detail. If decorative, say 'Decorative'."},
-            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-        ])
+        msg = HumanMessage(
+            content=[
+                {
+                    "type": "text",
+                    "text": "Analyze this medical image/chart. Transcribe logic/tables in detail. If decorative, say 'Decorative'.",
+                },
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+            ]
+        )
         response = vision_llm.invoke([msg])
         if not response or not response.content:
             return ""
@@ -48,6 +56,7 @@ def _analyze_image_content(pil_image: Image.Image) -> str:
     except Exception as e:
         logger.error(f"Vision API failed: {e!s}")
         return ""
+
 
 def process_pdf_page(doc: fitz.Document, page_num: int) -> str:
     """Extracts text and image descriptions from a single page."""
@@ -82,6 +91,7 @@ def process_pdf_page(doc: fitz.Document, page_num: int) -> str:
         logger.error(f"Error processing page {page_num + 1}: {e}")
         return ""
 
+
 def run_ingestion_pipeline(pdf_path: Path, output_dir: Path) -> None:
     """Orchestrates the full ingestion flow: Load -> Chunk -> Embed -> Save."""
 
@@ -97,10 +107,10 @@ def run_ingestion_pipeline(pdf_path: Path, output_dir: Path) -> None:
         with fitz.open(pdf_path) as doc:
             total_pages = len(doc)
             for i in range(total_pages):
-                logger.info(f"Processing page {i+1}/{total_pages}...")
+                logger.info(f"Processing page {i + 1}/{total_pages}...")
                 content = process_pdf_page(doc, i)
 
-                meta = {"source": pdf_path.name, "page": i+1}
+                meta = {"source": pdf_path.name, "page": i + 1}
                 raw_docs.append(Document(page_content=content, metadata=meta))
     except Exception as e:
         raise DocumentProcessingError(f"Failed to read PDF: {e!s}")
@@ -112,6 +122,7 @@ def run_ingestion_pipeline(pdf_path: Path, output_dir: Path) -> None:
 
     # 4. Save Chunks (Pickle for BM25)
     import pickle
+
     output_dir.mkdir(parents=True, exist_ok=True)
     chunks_path = output_dir / "chunks.pkl"
     with open(chunks_path, "wb") as f:

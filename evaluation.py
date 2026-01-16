@@ -7,11 +7,12 @@ from typing import Any, dict, list
 # Mocking the import for the script - in real life import your actual RAG chain
 # from src.rag import generate_answer
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 DATASET_PATH = Path("data/golden_dataset.json")
 OUTPUT_PATH = Path("eval_results.json")
+
 
 @dataclass
 class EvalResult:
@@ -22,9 +23,11 @@ class EvalResult:
     is_correct: bool
     latency_ms: float = 0.0
 
+
 def load_dataset(path: Path) -> list[dict[str, Any]]:
     with open(path) as f:
         return json.load(f)
+
 
 def llm_judge(generated: str, truth: str) -> bool:
     """
@@ -43,6 +46,7 @@ def llm_judge(generated: str, truth: str) -> bool:
     match_count = sum(1 for w in truth_keywords if w in generated.lower())
     return match_count / len(truth_keywords) > 0.5 if truth_keywords else False
 
+
 def run_evaluation():
     logger.info("Starting Evaluation Pipeline...")
     dataset = load_dataset(DATASET_PATH)
@@ -57,24 +61,26 @@ def run_evaluation():
         # generated_answer = generate_answer(item['question'])
 
         # MOCK RESPONSE for Demo purposes:
-        if item['ground_truth'] == "REFUSAL_SIGNAL":
+        if item["ground_truth"] == "REFUSAL_SIGNAL":
             generated_answer = "I cannot answer this as it is outside the HF guidelines."
         else:
-            generated_answer = item['ground_truth'] + " (Cited: Guideline 2022)"
+            generated_answer = item["ground_truth"] + " (Cited: Guideline 2022)"
 
         # 2. Evaluation (LLM-as-a-Judge)
-        is_correct = llm_judge(generated_answer, item['ground_truth'])
+        is_correct = llm_judge(generated_answer, item["ground_truth"])
 
         if is_correct:
             correct_count += 1
 
-        results.append(EvalResult(
-            question_id=item['id'],
-            question=item['question'],
-            ground_truth=item['ground_truth'],
-            generated_answer=generated_answer,
-            is_correct=is_correct
-        ))
+        results.append(
+            EvalResult(
+                question_id=item["id"],
+                question=item["question"],
+                ground_truth=item["ground_truth"],
+                generated_answer=generated_answer,
+                is_correct=is_correct,
+            )
+        )
 
         status_icon = "✅ PASS" if is_correct else "❌ FAIL"
         print(f"{item['id']:<6} | {status_icon:<10} | {item['question'][:30]}...")
@@ -85,6 +91,7 @@ def run_evaluation():
     # Save detailed report
     with open(OUTPUT_PATH, "w") as f:
         json.dump([vars(r) for r in results], f, indent=2)
+
 
 if __name__ == "__main__":
     run_evaluation()

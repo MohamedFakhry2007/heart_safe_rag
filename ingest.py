@@ -24,5 +24,6 @@ def main():
         logger.critical(f"Ingestion Failed: {e}", exc_info=True)
         return 1
 
+
 if __name__ == "__main__":
     sys.exit(main())

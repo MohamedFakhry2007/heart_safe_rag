@@ -2,6 +2,7 @@
 
 This module provides a centralized logger with consistent formatting and log levels.
 """
+
 import logging
 import sys
 from pathlib import Path
@@ -16,12 +17,13 @@ class ContextFilter(logging.Filter):
     This ensures the 'environment' field is available in every log record,
     even for third-party loggers that don't know about this field.
     """
+
     def __init__(self, environment: str = "unknown"):
         super().__init__()
         self.environment = environment
 
     def filter(self, record: logging.LogRecord) -> bool:
-        if not hasattr(record, 'environment'):
+        if not hasattr(record, "environment"):
             record.environment = self.environment
         return True
 
@@ -42,7 +44,7 @@ def setup_logger(
         Configured logger instance.
     """
     logger = logging.getLogger(name)
-    
+
     # Convert string log level to logging constant
     log_level_numeric = getattr(logging, log_level.upper(), logging.INFO)
     logger.setLevel(log_level_numeric)
@@ -58,8 +60,7 @@ def setup_logger(
 
     # Formatter including the environment field
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(environment)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(asctime)s - %(name)s - %(levelname)s - %(environment)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
 
     # Console handler
@@ -73,7 +74,7 @@ def setup_logger(
         log_file.parent.mkdir(parents=True, exist_ok=True)
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(formatter)
-        file_handler.addFilter(env_filter) # Add filter to handler
+        file_handler.addFilter(env_filter)  # Add filter to handler
         logger.addHandler(file_handler)
 
     return logger
