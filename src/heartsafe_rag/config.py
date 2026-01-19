@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     CHUNK_SEPARATORS: List[str] = ["\n\n", "\n", ". ", " ", ""]
 
     # Retrieval settings
-    RETRIEVAL_K: int = 7
+    RETRIEVAL_K: int = 20
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
 
     @field_validator("LOG_LEVEL")

@@ -117,8 +117,8 @@ class RetrievalService:
             logger.info(f"Loading Vector Store from {settings.VECTOR_DB_PATH}...")
             
             vectorstore = FAISS.load_local(
-                folder_path=str(settings.VECTOR_DB_PATH),  # Point to the 'vector_store' folder
-                index_name="index",                        # Default name used by save_local
+                folder_path=str(settings.VECTOR_DB_PATH),
+                index_name="index",
                 embeddings=embeddings,
                 allow_dangerous_deserialization=True
             )
@@ -132,13 +132,13 @@ class RetrievalService:
             with open(bm25_path, "rb") as f:
                 bm25_retriever = pickle.load(f)
             
-            # Update BM25 k parameter if needed (usually set during creation, but can be tweaked)
+            # Update BM25 k parameter
             bm25_retriever.k = settings.RETRIEVAL_K
 
-            # 4. Ensemble
+            # 4. Initialize Ensemble Retriever
             ensemble_retriever = EnsembleRetriever(
                 retrievers=[bm25_retriever, faiss_retriever],
-                weights=[0.4, 0.6] # Adjust weights as needed
+                weights=[0.4, 0.6]  # BM25 and FAISS weights
             )
             
             logger.info("Hybrid Retriever initialized successfully.")
@@ -153,6 +153,10 @@ class RetrievalService:
         Retrieve relevant documents for a given query.
         """
         logger.info(f"Retrieving for query: {query}")
-        docs = self.retriever.invoke(query)
-        logger.info(f"Retrieved {len(docs)} documents")
-        return docs
+        try:
+            docs = self.retriever.invoke(query)
+            logger.info(f"Retrieved {len(docs)} documents")
+            return docs
+        except Exception as e:
+            logger.error(f"Error during retrieval: {str(e)}")
+            raise
