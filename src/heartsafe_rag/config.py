@@ -50,8 +50,10 @@ class Settings(BaseSettings):
     CHUNK_SEPARATORS: List[str] = ["\n\n", "\n", ". ", " ", ""]
 
     # Retrieval settings
-    RETRIEVAL_K: int = 20
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    INITIAL_RETRIEVAL_K: int = 30
+    RERANK_TOP_K: int = 7
+    RERANKER_MODEL: str = "BAAI/bge-reranker-v2-m3"
 
     @field_validator("LOG_LEVEL")
     @classmethod

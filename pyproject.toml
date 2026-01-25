@@ -18,6 +18,7 @@ langchain-core = "^0.3"
 langchain-groq = "^0.2"
 
 # ML & Data
+torch = "^2.3.0"
 sentence-transformers = "^3.3"
 faiss-cpu = "^1.9"
 numpy = "^1.22"
@@ -61,31 +62,44 @@ target-version = "py311"
 [tool.ruff.lint]
 select = [
     "E", "F", "W", "I",  # Default Flake8 rules
-    "UP",  # pyupgrade
+    "UP",   # pyupgrade
     "RUF",  # Ruff-specific rules
+    "B",    # flake8-bugbear (Likely bugs)
+    "C4",   # flake8-comprehensions (Better list comprehensions)
+    "SIM",  # flake8-simplify (Simpler code suggestions)
+    "N",    # pep8-naming (Naming conventions)
+    "D",    # pydocstyle (Docstring enforcement)
+    "PT",   # flake8-pytest-style (Pytest best practices)
+    "ARG",  # flake8-unused-arguments
+    "PTH",  # flake8-use-pathlib (Use pathlib over os.path)
+    "ERA",  # eradicate (No commented-out code)
+    "PL",   # Pylint (General code quality)
+    "TRY",  # tryceratops (Exception handling antipatterns)
+    "T20",  # flake8-print (No print statements, use logging)
 ]
 ignore = [
-    "E501",  # Line too long - handled by black
-    "F401",  # Unused imports - sometimes needed for type checking
+    "E501",   # Line too long - handled by formatter
+    "D100",   # Missing docstring in public module (Optional, but good for scripts)
+    "D104",   # Missing docstring in public package
+    "TRY003", # Avoid specifying long messages outside the exception class (Too pedantic)
+    "PLR2004" # Magic value used in comparison (Sometimes necessary for math/thresholds)
 ]
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]  # Allow unused imports in __init__.py
+"__init__.py" = ["F401"]
+"tests/**/*.py" = ["D", "S101", "PLR2004"]  # Allow missing docstrings, asserts, and magic numbers in tests
+"tasks.py" = ["T201"] # Allow print in task runner
 
 [tool.mypy]
 python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
+strict = true
 warn_unreachable = true
-strict_equality = true
+pretty = true
+show_error_codes = true
+implicit_reexport = false
 [dependency-groups]
 dev = [
     "mypy (>=1.19.1,<2.0.0)",

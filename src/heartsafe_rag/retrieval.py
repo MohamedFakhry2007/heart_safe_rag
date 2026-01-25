@@ -15,7 +15,9 @@ from typing import List
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
+from langchain.retrievers import EnsembleRetriever, ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
 
@@ -109,7 +111,7 @@ class RetrievalService:
             # 1. Load Embeddings
             embeddings = HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL)
 
-            # 2. Load FAISS (Vector Store)
+            # 2. Load FAISS (Vector Store) - Stage 1: High Recall
             if not settings.VECTOR_DB_PATH.exists():
                 logger.warning("Vector DB not found. Please run ingestion first.")
                 raise ConfigurationError("Vector DB not found.")
@@ -122,9 +124,10 @@ class RetrievalService:
                 embeddings=embeddings,
                 allow_dangerous_deserialization=True
             )
-            faiss_retriever = vectorstore.as_retriever(search_kwargs={"k": settings.RETRIEVAL_K})
+            # Use INITIAL_RETRIEVAL_K for broad recall
+            faiss_retriever = vectorstore.as_retriever(search_kwargs={"k": settings.INITIAL_RETRIEVAL_K})
 
-            # 3. Load BM25 (Keyword)
+            # 3. Load BM25 (Keyword) - Stage 1: High Recall
             bm25_path = Path(settings.BM25_PATH)
             if not bm25_path.exists():
                 raise ConfigurationError("BM25 index not found.")
@@ -132,17 +135,32 @@ class RetrievalService:
             with open(bm25_path, "rb") as f:
                 bm25_retriever = pickle.load(f)
             
-            # Update BM25 k parameter
-            bm25_retriever.k = settings.RETRIEVAL_K
+            # Update BM25 k parameter to match INITIAL_RETRIEVAL_K
+            bm25_retriever.k = settings.INITIAL_RETRIEVAL_K
 
-            # 4. Initialize Ensemble Retriever
+            # 4. Initialize Ensemble Retriever (Base Retriever)
             ensemble_retriever = EnsembleRetriever(
                 retrievers=[bm25_retriever, faiss_retriever],
                 weights=[0.4, 0.6]  # BM25 and FAISS weights
             )
+
+            # 5. Initialize Cross-Encoder Re-Ranker - Stage 2: High Precision
+            logger.info(f"Initializing Re-Ranker: {settings.RERANKER_MODEL}")
+            model = HuggingFaceCrossEncoder(model_name=settings.RERANKER_MODEL)
             
-            logger.info("Hybrid Retriever initialized successfully.")
-            return ensemble_retriever
+            compressor = CrossEncoderReranker(
+                model=model, 
+                top_n=settings.RERANK_TOP_K  # Select best N documents after re-ranking
+            )
+
+            # 6. Create Final Pipeline
+            compression_retriever = ContextualCompressionRetriever(
+                base_compressor=compressor,
+                base_retriever=ensemble_retriever
+            )
+            
+            logger.info("Hybrid Retriever with Cross-Encoder Re-ranking initialized successfully.")
+            return compression_retriever
 
         except Exception as e:
             logger.error(f"Failed to initialize RetrievalService: {str(e)}")
@@ -154,8 +172,9 @@ class RetrievalService:
         """
         logger.info(f"Retrieving for query: {query}")
         try:
+            # This now calls: Ensemble (Top N) -> CrossEncoder -> Top K
             docs = self.retriever.invoke(query)
-            logger.info(f"Retrieved {len(docs)} documents")
+            logger.info(f"Retrieved {len(docs)} documents after re-ranking")
             return docs
         except Exception as e:
             logger.error(f"Error during retrieval: {str(e)}")
