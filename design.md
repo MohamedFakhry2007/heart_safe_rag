@@ -246,6 +246,7 @@ Provide a fast, transparent, clinician-friendly interface for interacting with t
    - Source document information
 
 ### 7. Repository Design
+
 ```bash
 HeartSafe-RAG/
 ├── app.py                 # Streamlit runtime
@@ -262,109 +263,131 @@ HeartSafe-RAG/
 │   └── chunks.pkl
 └── prompts/
     └── system_prompt.txt
-Data Models
-Guideline Chunk
-python
-Copy code
+```
+
+---
+
+## Data Models
+
+### Guideline Chunk
+
+```python
+from dataclasses import dataclass
+from typing import Optional
+
 @dataclass
 class GuidelineChunk:
     content: str
     source_file: str
     section: str
     guideline_year: Optional[int]
-Retrieval Result
-python
-Copy code
+```
+
+### Retrieval Result
+
+```python
 @dataclass
 class RetrievalResult:
     chunk: GuidelineChunk
     dense_score: float
     sparse_score: float
     combined_score: float
-Correctness Properties
+```
+
+---
+
+## Correctness Properties
+
 A correctness property defines a behavior that must hold across all valid executions.
 
-Retrieval Properties
-Property 1: Retrieval-first enforcement
+### Retrieval Properties
+
+**Property 1: Retrieval-first enforcement**  
 For any user query, the LLM must not generate an answer unless at least one guideline chunk is retrieved.
 
-Property 2: Hybrid ranking visibility
+**Property 2: Hybrid ranking visibility**  
 For any retrieved result, dense and sparse scores must be computable and combinable.
 
-Property 3: Deterministic rebuild
+**Property 3: Deterministic rebuild**  
 For any deployment using the same FAISS index and chunks, retrieval results must be identical.
 
-Safety Properties
-Property 4: No external knowledge leakage
+### Safety Properties
+
+**Property 4: No external knowledge leakage**  
 For any response, all factual claims must appear verbatim or semantically in retrieved guideline text.
 
-Property 5: Refusal on insufficiency
+**Property 5: Refusal on insufficiency**  
 For any query without sufficient guideline coverage, the system must refuse to answer.
 
-Performance Properties
-Property 6: Zero ingestion at runtime
+### Performance Properties
+
+**Property 6: Zero ingestion at runtime**  
 For any Streamlit startup, no embedding or indexing operations are executed.
 
-Property 7: Fast startup
+**Property 7: Fast startup**  
 The application must initialize retrieval components in under 5 seconds.
 
-Error Handling Strategy
-Ingestion Errors
-Skip corrupted files
+---
 
-Log failures with file-level metadata
+## Error Handling Strategy
 
-Continue batch ingestion
+### Ingestion Errors
+- Skip corrupted files  
+- Log failures with file-level metadata  
+- Continue batch ingestion
 
-Retrieval Errors
-Fail fast if FAISS index missing
+### Retrieval Errors
+- Fail fast if FAISS index is missing  
+- Clear error message for corrupted artifacts  
 
-Clear error message for corrupted artifacts
+### LLM Errors
+- Graceful degradation on API failure  
+- User-visible error without stack trace leakage  
 
-LLM Errors
-Graceful degradation on API failure
+---
 
-User-visible error without stack trace leakage
+## Testing Strategy
 
-Testing Strategy
-Unit Tests
-Chunking boundaries
+### Unit Tests
+- Chunking boundaries  
+- Embedding consistency  
+- Retriever rebuild logic  
 
-Embedding consistency
+### Property-Based Tests
+- Retrieval determinism  
+- Refusal correctness  
+- Context-only generation  
 
-Retriever rebuild logic
+### Integration Tests
+- End-to-end query → retrieval → answer  
+- Streamlit cold start validation  
 
-Property-Based Tests
-Retrieval determinism
-
-Refusal correctness
-
-Context-only generation
-
-Integration Tests
-End-to-end query → retrieval → answer
-
-Streamlit cold start validation
+---
 
 ## 8. Evaluation & Observability Design
 
 ### Purpose
+
 To provide empirical evidence of the system's safety and accuracy before deployment.
 
 ### Components
+
 1. **Golden Dataset (`data/golden_dataset.json`)**
    - Curated set of 50+ question-answer pairs derived strictly from PDFs.
    - Categories: Dosage, Diagnosis, Contraindications, Refusal (Out-of-Scope).
 
 2. **Offline Evaluator (`evaluation.py`)**
    - **Mode**: Batch processing.
-   - **Metric**: "Correctness" (Semantic similarity to Ground Truth) and "Safety" (Refusal of adversarial prompts).
+   - **Metrics**:
+     - Correctness (Semantic similarity to ground truth)
+     - Safety (Refusal of adversarial prompts)
    - **Mechanism**:
-     - Loop through Golden Dataset.
+     - Loop through the Golden Dataset.
      - Generate RAG response.
-     - Compare with Ground Truth using Heuristic/LLM-Judge.
+     - Compare with Ground Truth using heuristic or LLM-based judging.
      - Log Pass/Fail rate.
 
 ### Observability
-- **Traceability**: Every log entry includes `request_id`, `retrieved_chunk_ids`, and `latency`.
+
+- **Traceability**: Every log entry includes `request_id`, `retrieved_chunk_ids`, and `latency`.  
 - **Latency Budget**: < 200ms for retrieval, < 3s for generation.
