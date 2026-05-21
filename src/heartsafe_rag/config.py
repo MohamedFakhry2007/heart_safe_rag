@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     TESSERACT_CMD: str = "tesseract"
     OCR_ENABLED: bool = True
 
+    # Timeouts
+    LLM_TIMEOUT: int = 30
+
     # Query rewriting
     ENABLE_HYDE: bool = True
     ENABLE_MULTI_QUERY: bool = True

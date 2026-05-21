@@ -1,3 +1,6 @@
+import asyncio
+import time
+import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
@@ -5,8 +8,9 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from starlette.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_200_OK, HTTP_408_REQUEST_TIMEOUT, HTTP_500_INTERNAL_SERVER_ERROR
 
+from heartsafe_rag.config import settings
 from heartsafe_rag.generation import GenerationService
 from heartsafe_rag.retrieval import HybridRetriever
 from heartsafe_rag.schemas import ChatRequest, ChatResponse, SourceDocument
@@ -53,14 +57,26 @@ async def health_check() -> dict[str, str | list[str]]:
 
 @app.post("/chat", response_model=ChatResponse, status_code=HTTP_200_OK)
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
+    request_id = uuid.uuid4().hex[:8]
+    query = request.query
+    log_extra = {"request_id": request_id}
+    t_start = time.perf_counter()
+
+    logger.info(f"Chat request [{request_id}] query='{query}'", extra=log_extra)
+
     try:
-        query = request.query
         gen_service: GenerationService = services["generation"]
         ret_service: HybridRetriever = services["retrieval"]
 
-        context_docs = ret_service.retrieve(query)
+        context_docs = await asyncio.wait_for(
+            asyncio.to_thread(ret_service.retrieve, query),
+            timeout=settings.LLM_TIMEOUT,
+        )
 
-        answer = gen_service.generate_response(query, context_docs)
+        answer = await asyncio.wait_for(
+            asyncio.to_thread(gen_service.generate_response, query, context_docs),
+            timeout=settings.LLM_TIMEOUT,
+        )
 
         sources_response = [
             SourceDocument(
@@ -70,10 +86,33 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             for doc in context_docs
         ]
 
+        elapsed = time.perf_counter() - t_start
+        logger.info(
+            f"Chat response [{request_id}] in {elapsed:.2f}s "
+            f"answer_preview='{answer[:100]}...' sources={len(sources_response)}",
+            extra=log_extra,
+        )
+
         return ChatResponse(answer=answer, sources=sources_response)
 
+    except TimeoutError:
+        elapsed = time.perf_counter() - t_start
+        logger.error(
+            f"Chat timeout [{request_id}] after {elapsed:.2f}s",
+            extra=log_extra,
+        )
+        raise HTTPException(
+            status_code=HTTP_408_REQUEST_TIMEOUT,
+            detail="Request timed out. Please try again.",
+        ) from None
+
     except Exception as e:
-        logger.error(f"Error processing request: {e!s}")
+        elapsed = time.perf_counter() - t_start
+        logger.error(
+            f"Chat error [{request_id}] after {elapsed:.2f}s: {e!s}",
+            extra=log_extra,
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An internal error occurred while processing your request.",

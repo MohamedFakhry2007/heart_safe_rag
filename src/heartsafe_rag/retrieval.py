@@ -1,4 +1,5 @@
 import pickle
+import time
 
 from langchain.retrievers import ContextualCompressionRetriever, EnsembleRetriever
 from langchain.retrievers.document_compressors import CrossEncoderReranker
@@ -48,24 +49,29 @@ class HybridRetriever:
                 model=settings.LLM_MODEL,
                 temperature=0.3,
                 api_key=settings.GROQ_API_KEY,
+                request_timeout=settings.LLM_TIMEOUT,
             )
         return self._rewrite_llm
 
     def _apply_hyde(self, query: str) -> str:
-        """Generate a hypothetical guideline passage and use it as the retrieval query."""
+        t0 = time.perf_counter()
         chain = ChatPromptTemplate.from_template(HYDE_PROMPT) | self.rewrite_llm | StrOutputParser()
         hyde_query = chain.invoke({"question": query})
+        t1 = time.perf_counter()
+        logger.info(f"HyDE query expansion took {t1 - t0:.2f}s")
         logger.debug(f"HyDE expanded query: {hyde_query[:100]}...")
         return hyde_query.strip()
 
     def _generate_multi_queries(self, query: str) -> list[str]:
-        """Generate multiple query variants for broader retrieval."""
+        t0 = time.perf_counter()
         chain = (
             ChatPromptTemplate.from_template(MULTI_QUERY_PROMPT)
             | self.rewrite_llm
             | StrOutputParser()
         )
         result = chain.invoke({"question": query, "count": settings.MULTI_QUERY_COUNT})
+        t1 = time.perf_counter()
+        logger.info(f"Multi-query expansion took {t1 - t0:.2f}s")
         variants = [line.strip().split(". ", 1)[-1] for line in result.strip().split("\n") if line.strip()]
         logger.debug(f"Multi-query variants: {variants}")
         return variants[: settings.MULTI_QUERY_COUNT]
@@ -139,6 +145,7 @@ class HybridRetriever:
         return self._retriever
 
     def retrieve(self, query: str) -> list[Document]:
+        t_total = time.perf_counter()
         logger.info(f"Retrieving for query: {query}")
         try:
             retriever = self.get_retriever()
@@ -154,9 +161,14 @@ class HybridRetriever:
 
             queries_to_run.append(query)
 
+            t0 = time.perf_counter()
             all_results = [retriever.invoke(q) for q in queries_to_run]
+            t1 = time.perf_counter()
+            logger.info(f"Vector search ({len(queries_to_run)} queries) took {t1 - t0:.2f}s")
+
             merged = self._merge_results(all_results)
-            logger.info(f"Retrieved {len(merged)} documents after query rewriting + re-ranking")
+            t_total_elapsed = time.perf_counter() - t_total
+            logger.info(f"Retrieved {len(merged)} documents after query rewriting + re-ranking in {t_total_elapsed:.2f}s")
             return merged  # noqa: TRY300  # type: ignore[no-any-return]
         except Exception as e:
             logger.error(f"Error during retrieval: {e!s}")

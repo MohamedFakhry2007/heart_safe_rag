@@ -199,41 +199,63 @@
         const query = userInput.value.trim();
         if (!query) return;
 
-        // UI Updates
         appendMessage(query, 'user');
         userInput.value = '';
         userInput.disabled = true;
         sendBtn.disabled = true;
 
-        // Add loading indicator
         const loadingDiv = document.createElement('div');
         loadingDiv.className = 'message ai loading';
         loadingDiv.textContent = 'Thinking...';
         chatHistory.appendChild(loadingDiv);
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        console.log(`[Chat ${new Date().toISOString()}] Sending: "${query}"`);
+        console.time('chat-request');
+
         try {
             const response = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: query })
+                body: JSON.stringify({ query: query }),
+                signal: controller.signal,
             });
 
-            // Remove loading indicator
-            chatHistory.removeChild(loadingDiv);
+            clearTimeout(timeoutId);
+            console.timeEnd('chat-request');
+
+            // Only remove if still in DOM (guards against duplicate removal)
+            if (loadingDiv.parentNode) {
+                chatHistory.removeChild(loadingDiv);
+            }
 
             if (!response.ok) {
-                throw new Error("Server error");
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
-            
-            // Display answer with citations if available
+            console.log('[Chat] Response:', data);
+
             appendMessage(data.answer, 'ai', data.sources);
 
         } catch (error) {
-            chatHistory.removeChild(loadingDiv);
-            appendMessage("Sorry, an error occurred while processing your request.", 'ai');
-            console.error(error);
+            clearTimeout(timeoutId);
+            console.timeEnd('chat-request');
+
+            // Only remove if still in DOM (guards against duplicate removal)
+            if (loadingDiv.parentNode) {
+                chatHistory.removeChild(loadingDiv);
+            }
+
+            if (error.name === 'AbortError') {
+                console.error('[Chat] Request timed out after 30s');
+                appendMessage("Sorry, the request timed out. Please try again.", 'ai');
+            } else {
+                console.error('[Chat] Error:', error);
+                appendMessage("Sorry, an error occurred while processing your request.", 'ai');
+            }
         } finally {
             userInput.disabled = false;
             sendBtn.disabled = false;

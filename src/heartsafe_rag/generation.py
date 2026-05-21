@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +62,7 @@ class GenerationService:
             model=settings.LLM_MODEL,
             temperature=settings.LLM_TEMPERATURE,
             api_key=settings.GROQ_API_KEY,
+            request_timeout=settings.LLM_TIMEOUT,
         )
 
         system_prompt = _load_system_prompt()
@@ -96,15 +98,21 @@ class GenerationService:
 
         context_text = "\n\n".join(doc.page_content for doc in context_docs)
 
+        t0 = time.perf_counter()
         answer = self.rag_chain.invoke(
             {"context": context_text, "question": query},
             config={"callbacks": callbacks},
         )
+        t1 = time.perf_counter()
+        logger.info(f"RAG generation took {t1 - t0:.2f}s")
 
+        t0 = time.perf_counter()
         guard_result = self.guard_chain.invoke({
             "context": context_text,
             "answer": answer,
         })
+        t1 = time.perf_counter()
+        logger.info(f"Guard check took {t1 - t0:.2f}s")
 
         if not guard_result.get("is_grounded", False):
             logger.warning(f"Output guard rejected answer. Reason: {guard_result.get('reason', 'unknown')}")
