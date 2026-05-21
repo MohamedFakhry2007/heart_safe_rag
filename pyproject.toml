@@ -96,7 +96,7 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/**/*.py" = ["D", "S101", "PLR2004"]  # Allow missing docstrings, asserts, and magic numbers in tests
+"tests/**/*.py" = ["D", "S101", "PLR2004", "ARG002"]  # Allow missing docstrings, asserts, magic numbers, and unused mock args in tests
 "tasks.py" = ["T201"] # Allow print in task runner
 
 [tool.mypy]
