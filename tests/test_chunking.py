@@ -1,17 +1,9 @@
-"""Tests for the chunking module."""
-
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
 from langchain.docstore.document import Document
 
-from heartsafe_rag.chunking import GuidelineChunker
+from heartsafe_rag.chunking import GuidelineChunker, clean_content, extract_metadata_from_source
 
 
-def test_chunking_logic():
-    """Test the core chunking logic with a mock document."""
-    # Mock Document mimicking a PDF page with an image description
+def test_chunking_logic() -> None:
     mock_text = (
         "1.2 DIAGNOSIS OF HEART FAILURE\n\n"
         "Heart failure is a complex clinical syndrome resulting from any structural or "
@@ -24,66 +16,47 @@ def test_chunking_logic():
 
     doc = Document(
         page_content=mock_text,
-        metadata={"source": "data/guidelines/2022-AHA-HF-Management.pdf"}
+        metadata={"source": "data/guidelines/2022-AHA-HF-Management.pdf"},
     )
 
-    print(f"--- Input Document Length: {len(mock_text)} chars ---")
-
-    # Initialize chunker with test settings
     chunker = GuidelineChunker(
         chunk_size=500,
         chunk_overlap=100,
-        separators=["\n\n", "\n", ". ", " ", ""]
+        separators=["\n\n", "\n", ". ", " ", ""],
     )
 
     chunks = chunker.split_documents([doc])
 
-    print(f"--- Generated {len(chunks)} Chunks ---")
+    assert len(chunks) > 0
 
     for i, chunk in enumerate(chunks):
-        print(f"\n[Chunk {i}] (Len: {len(chunk.page_content)})")
-        print(f"Metadata: {chunk.metadata}")
-        print(f"Content Preview: {chunk.page_content[:100]}...")
-
-        # Verification Logic
-        assert "2022" in str(chunk.metadata['guideline_year']), "Year not extracted correctly!"
+        assert "2022" in str(chunk.metadata["guideline_year"]), "Year not extracted correctly!"
         assert len(chunk.page_content) <= 550, f"Chunk too large: {len(chunk.page_content)} chars"
         assert chunk.metadata["chunk_id"] == i, "Chunk ID not set correctly"
         assert chunk.metadata["processed_type"] == "guideline_text", "Processed type not set correctly"
         assert chunk.metadata["source"] == "2022-AHA-HF-Management.pdf", "Source not set correctly"
 
-def test_empty_documents():
-    """Test that an empty list of documents returns an empty list."""
+
+def test_empty_documents() -> None:
     chunker = GuidelineChunker()
     result = chunker.split_documents([])
     assert result == []
 
-def test_metadata_extraction():
-    """Test the metadata extraction from filenames."""
-    chunker = GuidelineChunker()
 
-    # Test with year in filename
-    meta = chunker._extract_metadata_from_source("data/guidelines/2022-AHA-HF-Management.pdf")
+def test_metadata_extraction() -> None:
+    meta = extract_metadata_from_source("data/guidelines/2022-AHA-HF-Management.pdf")
     assert meta["guideline_year"] == 2022
     assert meta["source"] == "2022-AHA-HF-Management.pdf"
 
-    # Test without year in filename
-    meta = chunker._extract_metadata_from_source("data/guidelines/AHA-HF-Management.pdf")
+    meta = extract_metadata_from_source("data/guidelines/AHA-HF-Management.pdf")
     assert meta["guideline_year"] == "Unknown"
     assert meta["source"] == "AHA-HF-Management.pdf"
 
-def test_content_cleaning():
-    """Test the content cleaning logic."""
-    chunker = GuidelineChunker()
 
-    # Test excessive newlines
-    cleaned = chunker._clean_content("First line\n\n\n\nSecond line")
+def test_content_cleaning() -> None:
+    cleaned = clean_content("First line\n\n\n\nSecond line")
     assert "\n\n" in cleaned
     assert "\n\n\n" not in cleaned
 
-    # Test leading/trailing whitespace
-    cleaned = chunker._clean_content("  test  \n")
+    cleaned = clean_content("  test  \n")
     assert cleaned == "test"
-
-if __name__ == "__main__":
-    test_chunking_logic()

@@ -1,8 +1,6 @@
-from dotenv import load_dotenv
-import os
 from pathlib import Path
-from typing import List
 
+from dotenv import load_dotenv
 from pydantic import Field, SecretStr, field_validator
 from pydantic.types import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,13 +24,13 @@ class Settings(BaseSettings):
 
     # Data directories
     # Validates that 'data' exists, creates it if not (via validator below)
-    DATA_DIR: DirectoryPath = Path("data") 
-    
+    DATA_DIR: DirectoryPath = Path("data")
+
     # Paths for indices
     # We use 'vector_store' for the FAISS folder
     VECTOR_DB_PATH: Path = Path("data/vector_store")
     BM25_PATH: Path = Path("data/bm25_index.pkl")
-    
+
     # Langfuse Tracing
     LANGFUSE_PUBLIC_KEY: str = Field(..., description="Langfuse Public Key")
     LANGFUSE_SECRET_KEY: SecretStr = Field(..., description="Langfuse Secret Key")
@@ -47,13 +45,19 @@ class Settings(BaseSettings):
     # RAG Ingestion settings
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 100
-    CHUNK_SEPARATORS: List[str] = ["\n\n", "\n", ". ", " ", ""]
+    CHUNK_SEPARATORS: list[str] = ["\n\n", "\n", ". ", " ", ""]
 
     # Retrieval settings
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
     INITIAL_RETRIEVAL_K: int = 30
     RERANK_TOP_K: int = 7
     RERANKER_MODEL: str = "BAAI/bge-reranker-v2-m3"
+    HYBRID_WEIGHTS: list[float] = Field(default_factory=lambda: [0.4, 0.6], description="[BM25_weight, FAISS_weight]")
+
+    # Query rewriting
+    ENABLE_HYDE: bool = True
+    ENABLE_MULTI_QUERY: bool = True
+    MULTI_QUERY_COUNT: int = 3
 
     @field_validator("LOG_LEVEL")
     @classmethod
@@ -67,10 +71,10 @@ class Settings(BaseSettings):
     @classmethod
     def validate_data_dir(cls, v: Path) -> Path:
         if not v.exists():
-            os.makedirs(v, exist_ok=True)
+            v.mkdir(parents=True, exist_ok=True)
         return v
 
-# Initialize settings. 
+# Initialize settings.
 # BaseSettings automatically reads from os.environ and .env file.
 # We don't need to manually pass the key here unless we want to override it.
 settings = Settings()

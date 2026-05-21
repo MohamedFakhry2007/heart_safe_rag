@@ -42,7 +42,7 @@ def setup_logger(
         Configured logger instance.
     """
     logger = logging.getLogger(name)
-    
+
     # Convert string log level to logging constant
     log_level_numeric = getattr(logging, log_level.upper(), logging.INFO)
     logger.setLevel(log_level_numeric)

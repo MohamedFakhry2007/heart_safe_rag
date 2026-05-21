@@ -1,22 +1,22 @@
 import json
 from pathlib import Path
+
 from langfuse import Langfuse
-from heartsafe_rag.config import settings
+
 from heartsafe_rag.utils.logger import logger
 
-def upload_dataset():
-    """
-    Uploads the local golden_dataset.json to Langfuse as a managed Dataset.
-    """
+
+def upload_dataset() -> None:
+    """Uploads the local golden_dataset.json to Langfuse as a managed Dataset."""
     # Initialize Langfuse Client (picks up env vars automatically)
     langfuse = Langfuse()
 
     dataset_name = "heartsafe_golden_dataset_v1"
-    
+
     # Create or Get the Dataset
     try:
         langfuse.create_dataset(
-            name=dataset_name, 
+            name=dataset_name,
             description="Ground truth questions and answers for Heart Failure Guidelines (AHA 2022)"
         )
         logger.info(f"Dataset '{dataset_name}' created/verified.")
@@ -29,7 +29,7 @@ def upload_dataset():
         logger.error(f"File not found: {json_path}")
         return
 
-    with open(json_path, "r", encoding="utf-8") as f:
+    with json_path.open(encoding="utf-8") as f:
         data = json.load(f)
 
     # Upsert Items

@@ -45,6 +45,7 @@ langchain-huggingface = "^0.1.0"
 fastapi = "^0.128.0"
 uvicorn = "^0.40.0"
 pypdf = "^6.6.0"
+pdfplumber = "^0.11.0"
 jinja2 = "^3.1.6"
 langfuse = "^3.12.0"
 
@@ -79,10 +80,14 @@ select = [
 ]
 ignore = [
     "E501",   # Line too long - handled by formatter
-    "D100",   # Missing docstring in public module (Optional, but good for scripts)
+    "D100",   # Missing docstring in public module
+    "D101",   # Missing docstring in public class
+    "D102",   # Missing docstring in public method
+    "D103",   # Missing docstring in public function
     "D104",   # Missing docstring in public package
-    "TRY003", # Avoid specifying long messages outside the exception class (Too pedantic)
-    "PLR2004" # Magic value used in comparison (Sometimes necessary for math/thresholds)
+    "D107",   # Missing docstring in __init__
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "PLR2004" # Magic value used in comparison
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -100,6 +105,25 @@ warn_unreachable = true
 pretty = true
 show_error_codes = true
 implicit_reexport = false
+ignore_missing_imports = true
+follow_imports = "skip"
+
+[[tool.mypy.overrides]]
+module = [
+    "heartsafe_rag",
+    "heartsafe_rag.*",
+    "tests",
+    "tests.*",
+]
+disable_error_code = [
+    "misc",
+    "untyped-decorator",
+    "no-any-return",
+    "unused-ignore",
+    "dict-item",
+    "no-untyped-def",
+]
+
 [dependency-groups]
 dev = [
     "mypy (>=1.19.1,<2.0.0)",

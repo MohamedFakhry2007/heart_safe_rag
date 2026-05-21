@@ -27,8 +27,7 @@ def load_dataset(path: Path) -> list[dict[str, Any]]:
         return json.load(f)
 
 def llm_judge(generated: str, truth: str) -> bool:
-    """
-    Simulates an LLM-as-a-Judge.
+    """Simulates an LLM-as-a-Judge.
     In production, this would call GPT-4/Llama-70b to compare meaning.
     Here, we use simple string presence for the demo.
     """
@@ -49,8 +48,6 @@ def run_evaluation():
     results = []
     correct_count = 0
 
-    print(f"{'ID':<6} | {'Status':<10} | {'Question Summary'}")
-    print("-" * 50)
 
     for item in dataset:
         # 1. Inference (Replace with actual RAG call)
@@ -76,8 +73,6 @@ def run_evaluation():
             is_correct=is_correct
         ))
 
-        status_icon = "✅ PASS" if is_correct else "❌ FAIL"
-        print(f"{item['id']:<6} | {status_icon:<10} | {item['question'][:30]}...")
 
     score = (correct_count / len(dataset)) * 100
     logger.info(f"Evaluation Complete. Final Accuracy: {score:.2f}%")
