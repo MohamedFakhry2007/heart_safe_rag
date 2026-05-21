@@ -1,3 +1,4 @@
+import io
 import pickle
 from pathlib import Path
 
@@ -7,11 +8,42 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
+from PIL import Image
 
 from heartsafe_rag.chunking import GuidelineChunker
 from heartsafe_rag.config import settings
-from heartsafe_rag.exceptions import DocumentProcessingError
+from heartsafe_rag.exceptions import DocumentProcessingError, ImageProcessingError
 from heartsafe_rag.utils.logger import logger
+
+try:
+    import pytesseract
+
+    HAS_PYTESSERACT = True
+    if settings.TESSERACT_CMD != "tesseract":
+        pytesseract.pytesseract.tesseract_cmd = settings.TESSERACT_CMD
+except ImportError:
+    HAS_PYTESSERACT = False
+    logger.warning("pytesseract not installed. Image OCR and scanned PDF support disabled.")
+
+
+def _ocr_image(image: Image.Image) -> str:
+    if not HAS_PYTESSERACT or not settings.OCR_ENABLED:
+        return ""
+    try:
+        return pytesseract.image_to_string(image).strip()
+    except Exception as e:
+        logger.warning(f"OCR failed: {e}")
+        return ""
+
+
+def _ocr_page_image(page: fitz.Page) -> str:
+    try:
+        pix = page.get_pixmap()
+        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+        return _ocr_image(img)
+    except Exception as e:
+        logger.warning(f"Page OCR failed: {e}")
+        return ""
 
 
 def _extract_tables_from_page(pdf_path: str, page_num: int) -> list[str]:
@@ -35,11 +67,67 @@ def _extract_tables_from_page(pdf_path: str, page_num: int) -> list[str]:
     return tables_text
 
 
-def process_pdf_page(pdf_path: str, page_num: int) -> str:
+def _extract_images_from_page(
+    pdf_path: str,
+    page_num: int,
+    output_dir: Path | None = None,
+) -> list[str]:
+    if not HAS_PYTESSERACT or not settings.OCR_ENABLED:
+        return []
+
+    image_texts: list[str] = []
+    try:
+        doc = fitz.open(pdf_path)
+        page = doc.load_page(page_num)
+        images = page.get_images(full=True)
+        for img_idx, (xref, *_rest) in enumerate(images):
+            try:
+                base_image = doc.extract_image(xref)
+                image_bytes = base_image["image"]
+                pil_image = Image.open(io.BytesIO(image_bytes))
+
+                if output_dir:
+                    ext = base_image["ext"]
+                    img_filename = f"page{page_num + 1}_img{img_idx + 1}.{ext}"
+                    img_path = output_dir / "images" / img_filename
+                    img_path.parent.mkdir(parents=True, exist_ok=True)
+                    img_path.write_bytes(image_bytes)
+
+                ocr_text = _ocr_image(pil_image)
+                if ocr_text:
+                    image_texts.append(
+                        f"\n[IMAGE {img_idx + 1} OCR]\n{ocr_text}\n[/IMAGE]"
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to process image {img_idx + 1} on page {page_num + 1}: {e}")
+                raise ImageProcessingError(
+                    f"Failed to process image {img_idx + 1} on page {page_num + 1}: {e}"
+                ) from e
+        doc.close()
+    except ImageProcessingError:
+        raise
+    except Exception as e:
+        logger.warning(f"Image extraction failed on page {page_num + 1}: {e}")
+    return image_texts
+
+
+def process_pdf_page(
+    pdf_path: str,
+    page_num: int,
+    output_dir: Path | None = None,
+) -> str:
     try:
         doc = fitz.open(pdf_path)
         page = doc.load_page(page_num)
         text_content = page.get_text() or ""
+
+        if len(text_content.strip()) < 50:
+            ocr_text = _ocr_page_image(page)
+            if ocr_text:
+                text_content = f"\n[SCANNED PAGE OCR]\n{ocr_text}\n[/OCR]"
+
+        image_ocr_content = _extract_images_from_doc(doc, page_num, output_dir)
+
         doc.close()
     except Exception as e:
         logger.error(f"Error processing page {page_num + 1} of {pdf_path}: {e}")
@@ -47,10 +135,55 @@ def process_pdf_page(pdf_path: str, page_num: int) -> str:
 
     table_content = _extract_tables_from_page(pdf_path, page_num)
 
+    parts = [text_content]
     if table_content:
-        return text_content + "\n" + "\n".join(table_content)
+        parts.append("\n".join(table_content))
+    if image_ocr_content:
+        parts.append("\n".join(image_ocr_content))
 
-    return text_content
+    return "\n\n".join(parts)
+
+
+def _extract_images_from_doc(
+    doc: fitz.Document,
+    page_num: int,
+    output_dir: Path | None = None,
+) -> list[str]:
+    if not HAS_PYTESSERACT or not settings.OCR_ENABLED:
+        return []
+
+    image_texts: list[str] = []
+    try:
+        page = doc.load_page(page_num)
+        images = page.get_images(full=True)
+        for img_idx, (xref, *_rest) in enumerate(images):
+            try:
+                base_image = doc.extract_image(xref)
+                image_bytes = base_image["image"]
+                pil_image = Image.open(io.BytesIO(image_bytes))
+
+                if output_dir:
+                    ext = base_image["ext"]
+                    img_filename = f"page{page_num + 1}_img{img_idx + 1}.{ext}"
+                    img_path = output_dir / "images" / img_filename
+                    img_path.parent.mkdir(parents=True, exist_ok=True)
+                    img_path.write_bytes(image_bytes)
+
+                ocr_text = _ocr_image(pil_image)
+                if ocr_text:
+                    image_texts.append(
+                        f"\n[IMAGE {img_idx + 1} OCR]\n{ocr_text}\n[/IMAGE]"
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to process image {img_idx + 1} on page {page_num + 1}: {e}")
+                raise ImageProcessingError(
+                    f"Failed to process image {img_idx + 1} on page {page_num + 1}: {e}"
+                ) from e
+    except ImageProcessingError:
+        raise
+    except Exception as e:
+        logger.warning(f"Image extraction failed on page {page_num + 1}: {e}")
+    return image_texts
 
 
 def process_single_pdf(pdf_path: Path, output_dir: Path) -> None:
@@ -65,7 +198,7 @@ def process_single_pdf(pdf_path: Path, output_dir: Path) -> None:
             total_pages = len(doc)
             for i in range(total_pages):
                 logger.info(f"Processing page {i+1}/{total_pages}...")
-                content = process_pdf_page(str(pdf_path), i)
+                content = process_pdf_page(str(pdf_path), i, output_dir)
                 meta = {"source": pdf_path.name, "page": i + 1}
                 raw_docs.append(Document(page_content=content, metadata=meta))
     except Exception as e:
@@ -90,7 +223,7 @@ def process_batch(input_dir: Path, output_dir: Path) -> None:
         try:
             with fitz.open(pdf_path) as doc:
                 for i in range(len(doc)):
-                    content = process_pdf_page(str(pdf_path), i)
+                    content = process_pdf_page(str(pdf_path), i, output_dir)
                     meta = {"source": pdf_path.name, "page": i + 1}
                     all_docs.append(Document(page_content=content, metadata=meta))
         except Exception as e:

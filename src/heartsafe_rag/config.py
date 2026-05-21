@@ -54,6 +54,10 @@ class Settings(BaseSettings):
     RERANKER_MODEL: str = "BAAI/bge-reranker-v2-m3"
     HYBRID_WEIGHTS: list[float] = Field(default_factory=lambda: [0.4, 0.6], description="[BM25_weight, FAISS_weight]")
 
+    # OCR settings
+    TESSERACT_CMD: str = "tesseract"
+    OCR_ENABLED: bool = True
+
     # Query rewriting
     ENABLE_HYDE: bool = True
     ENABLE_MULTI_QUERY: bool = True
