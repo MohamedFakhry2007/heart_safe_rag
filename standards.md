@@ -96,4 +96,5 @@ Use the centralized logger in `src.utils`.
   Example:  
   `feat: add hybrid search`  
   `fix: token limit overflow`
-- **Pre-commit**: Run `make check` before pushing.
+- **Pre-commit**: Run `make check` (ruff + mypy) and `make test` before pushing.
+- **Formatting**: Run `make format` (`ruff format .`) to auto-format before committing.

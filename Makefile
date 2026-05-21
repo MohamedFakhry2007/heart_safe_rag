@@ -1,4 +1,4 @@
-.PHONY: install setup ingest run eval check
+.PHONY: install setup ingest run api eval test check format
 
 install:
 	poetry install
@@ -16,11 +16,13 @@ check:
 
 ingest:
 	@echo "Running Ingestion Pipeline..."
-	poetry run python ingest.py
+	poetry run python ingest.py data/guidelines
 
-run:
-	@echo "Starting Streamlit App..."
-	poetry run streamlit run app.py
+api:
+	@echo "Starting FastAPI Server..."
+	poetry run uvicorn heartsafe_rag.api:app --reload
+
+run: api
 
 eval:
 	@echo "Running Golden Dataset Evaluation..."
