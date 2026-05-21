@@ -26,13 +26,19 @@ except ImportError:
     logger.warning("pytesseract not installed. Image OCR and scanned PDF support disabled.")
 
 
+_ocr_warned = False
+
+
 def _ocr_image(image: Image.Image) -> str:
+    global _ocr_warned
     if not HAS_PYTESSERACT or not settings.OCR_ENABLED:
         return ""
     try:
         return pytesseract.image_to_string(image).strip()
     except Exception as e:
-        logger.warning(f"OCR failed: {e}")
+        if not _ocr_warned:
+            _ocr_warned = True
+            logger.warning(f"OCR call failed: {e}")
         return ""
 
 
