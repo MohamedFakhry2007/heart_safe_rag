@@ -1,6 +1,7 @@
 import asyncio
 import time
 import uuid
+from collections import OrderedDict
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
@@ -17,6 +18,32 @@ from heartsafe_rag.schemas import ChatRequest, ChatResponse, SourceDocument
 from heartsafe_rag.utils.logger import logger
 
 services: dict[str, Any] = {}
+
+
+class TTLCache:
+    def __init__(self, capacity: int = 128, ttl_seconds: int = 300) -> None:
+        self.capacity = capacity
+        self.ttl = ttl_seconds
+        self._cache: OrderedDict[str, tuple[float, ChatResponse]] = OrderedDict()
+
+    def get(self, key: str) -> ChatResponse | None:
+        if key not in self._cache:
+            return None
+        timestamp, value = self._cache[key]
+        if time.monotonic() - timestamp > self.ttl:
+            del self._cache[key]
+            return None
+        self._cache.move_to_end(key)
+        return value
+
+    def set(self, key: str, value: ChatResponse) -> None:
+        self._cache[key] = (time.monotonic(), value)
+        self._cache.move_to_end(key)
+        while len(self._cache) > self.capacity:
+            self._cache.popitem(last=False)
+
+
+_cache = TTLCache()
 
 
 @asynccontextmanager
@@ -47,7 +74,10 @@ templates = Jinja2Templates(directory="src/heartsafe_rag/templates")
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def read_root(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("chat.html", {"request": request})
+    return templates.TemplateResponse("chat.html", {
+        "request": request,
+        "llm_timeout_ms": settings.LLM_TIMEOUT * 1000,
+    })
 
 
 @app.get("/health", status_code=HTTP_200_OK)
@@ -63,6 +93,13 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     t_start = time.perf_counter()
 
     logger.info(f"Chat request [{request_id}] query='{query}'", extra=log_extra)
+
+    cache_key = query.strip().lower()
+    cached = _cache.get(cache_key)
+    if cached is not None:
+        elapsed = time.perf_counter() - t_start
+        logger.info(f"Chat cache hit [{request_id}] in {elapsed:.2f}s", extra=log_extra)
+        return cached
 
     try:
         gen_service: GenerationService = services["generation"]
@@ -86,14 +123,15 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             for doc in context_docs
         ]
 
+        response = ChatResponse(answer=answer, sources=sources_response)
+        _cache.set(cache_key, response)
+
         elapsed = time.perf_counter() - t_start
         logger.info(
             f"Chat response [{request_id}] in {elapsed:.2f}s "
             f"answer_preview='{answer[:100]}...' sources={len(sources_response)}",
             extra=log_extra,
         )
-
-        return ChatResponse(answer=answer, sources=sources_response)
 
     except TimeoutError:
         elapsed = time.perf_counter() - t_start
@@ -117,3 +155,5 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An internal error occurred while processing your request.",
         ) from e
+    else:
+        return response

@@ -56,7 +56,11 @@ class HybridRetriever:
     def _apply_hyde(self, query: str) -> str:
         t0 = time.perf_counter()
         chain = ChatPromptTemplate.from_template(HYDE_PROMPT) | self.rewrite_llm | StrOutputParser()
-        hyde_query = chain.invoke({"question": query})
+        try:
+            hyde_query = chain.invoke({"question": query})
+        except Exception as e:
+            logger.warning(f"HyDE query expansion failed (using original query): {e}", exc_info=True)
+            return query
         t1 = time.perf_counter()
         logger.info(f"HyDE query expansion took {t1 - t0:.2f}s")
         logger.debug(f"HyDE expanded query: {hyde_query[:100]}...")
@@ -69,7 +73,11 @@ class HybridRetriever:
             | self.rewrite_llm
             | StrOutputParser()
         )
-        result = chain.invoke({"question": query, "count": settings.MULTI_QUERY_COUNT})
+        try:
+            result = chain.invoke({"question": query, "count": settings.MULTI_QUERY_COUNT})
+        except Exception as e:
+            logger.warning(f"Multi-query expansion failed (using original query only): {e}", exc_info=True)
+            return []
         t1 = time.perf_counter()
         logger.info(f"Multi-query expansion took {t1 - t0:.2f}s")
         variants = [line.strip().split(". ", 1)[-1] for line in result.strip().split("\n") if line.strip()]

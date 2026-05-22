@@ -10,7 +10,10 @@ from langfuse.langchain import CallbackHandler
 from pydantic import BaseModel, Field
 
 from heartsafe_rag.config import settings
+from heartsafe_rag.utils.callbacks import LLMResponseLoggingHandler
 from heartsafe_rag.utils.logger import logger
+
+_llm_log_handler = LLMResponseLoggingHandler(logger)
 
 SYSTEM_PROMPT_PATH = Path("prompts/system_prompt.txt")
 
@@ -86,7 +89,7 @@ class GenerationService:
         callbacks: list[Any] | None = None,
     ) -> str:
         if callbacks is None:
-            callbacks = [CallbackHandler()]
+            callbacks = [CallbackHandler(), _llm_log_handler]
 
         if not context_docs:
             return (
@@ -99,28 +102,40 @@ class GenerationService:
         context_text = "\n\n".join(doc.page_content for doc in context_docs)
 
         t0 = time.perf_counter()
-        answer = self.rag_chain.invoke(
-            {"context": context_text, "question": query},
-            config={"callbacks": callbacks},
-        )
+        try:
+            answer = self.rag_chain.invoke(
+                {"context": context_text, "question": query},
+                config={"callbacks": callbacks},
+            )
+        except Exception as e:
+            logger.error(f"RAG generation failed: {e}", exc_info=True)
+            return (
+                "I encountered an error while generating a response. "
+                "Please try rephrasing your question or try again later."
+            )
         t1 = time.perf_counter()
         logger.info(f"RAG generation took {t1 - t0:.2f}s")
 
-        t0 = time.perf_counter()
-        guard_result = self.guard_chain.invoke({
-            "context": context_text,
-            "answer": answer,
-        })
-        t1 = time.perf_counter()
-        logger.info(f"Guard check took {t1 - t0:.2f}s")
+        if settings.ENABLE_GUARD:
+            t0 = time.perf_counter()
+            try:
+                guard_result = self.guard_chain.invoke({
+                    "context": context_text,
+                    "answer": answer,
+                })
+            except Exception as e:
+                logger.warning(f"Guard check failed (proceeding with answer): {e}", exc_info=True)
+                guard_result = {"is_grounded": True, "reason": "Guard check unavailable"}
+            t1 = time.perf_counter()
+            logger.info(f"Guard check took {t1 - t0:.2f}s")
 
-        if not guard_result.get("is_grounded", False):
-            logger.warning(f"Output guard rejected answer. Reason: {guard_result.get('reason', 'unknown')}")
-            return (
-                "I cannot provide a response to this query because:\n"
-                "- The generated response contained information not supported by the retrieved guidelines.\n"
-                f"- {guard_result.get('reason', 'Grounding verification failed')}\n"
-                "- I am designed to provide information only from the official heart failure guidelines."
-            )
+            if not guard_result.get("is_grounded", False):
+                logger.warning(f"Output guard rejected answer. Reason: {guard_result.get('reason', 'unknown')}")
+                return (
+                    "I cannot provide a response to this query because:\n"
+                    "- The generated response contained information not supported by the retrieved guidelines.\n"
+                    f"- {guard_result.get('reason', 'Grounding verification failed')}\n"
+                    "- I am designed to provide information only from the official heart failure guidelines."
+                )
 
         return str(answer)

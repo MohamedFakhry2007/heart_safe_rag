@@ -66,6 +66,9 @@ class Settings(BaseSettings):
     ENABLE_MULTI_QUERY: bool = True
     MULTI_QUERY_COUNT: int = 3
 
+    # Safety guard
+    ENABLE_GUARD: bool = True
+
     @field_validator("LOG_LEVEL")
     @classmethod
     def validate_log_level(cls, v: str) -> str:

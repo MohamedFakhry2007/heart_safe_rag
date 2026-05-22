@@ -210,7 +210,7 @@
         chatHistory.appendChild(loadingDiv);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        const timeoutId = setTimeout(() => controller.abort(), {{ llm_timeout_ms }});
 
         console.log(`[Chat ${new Date().toISOString()}] Sending: "${query}"`);
         console.time('chat-request');
