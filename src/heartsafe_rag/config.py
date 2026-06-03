@@ -39,19 +39,17 @@ class Settings(BaseSettings):
     # LLM settings
     # Pydantic will automatically read GROQ_API_KEY from .env
     GROQ_API_KEY: SecretStr = Field(..., description="Groq API Key")
-    LLM_MODEL: str = "llama-3.3-70b-versatile"
+    LLM_MODEL: str = "llama-3.1-8b-instant"
     LLM_TEMPERATURE: float = 0.0
 
     # RAG Ingestion settings
-    CHUNK_SIZE: int = 500
+    CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 100
     CHUNK_SEPARATORS: list[str] = ["\n\n", "\n", ". ", " ", ""]
 
     # Retrieval settings
-    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
-    INITIAL_RETRIEVAL_K: int = 30
-    RERANK_TOP_K: int = 7
-    RERANKER_MODEL: str = "BAAI/bge-reranker-v2-m3"
+    EMBEDDING_MODEL: str = "pritamdeka/S-PubMedBert-MS-MARCO"
+    INITIAL_RETRIEVAL_K: int = 7
     HYBRID_WEIGHTS: list[float] = Field(default_factory=lambda: [0.4, 0.6], description="[BM25_weight, FAISS_weight]")
 
     # OCR settings
@@ -66,8 +64,8 @@ class Settings(BaseSettings):
     ENABLE_MULTI_QUERY: bool = True
     MULTI_QUERY_COUNT: int = 3
 
-    # Safety guard
-    ENABLE_GUARD: bool = True
+    # Safety guard (removed — generator-only workflow)
+    ENABLE_GUARD: bool = False
 
     @field_validator("LOG_LEVEL")
     @classmethod

@@ -38,7 +38,7 @@ class JudgeVerdict(BaseModel):
 
 
 class ClinicalJudge:
-    def __init__(self, model_name: str = "llama-3.3-70b-versatile", temperature: float = 0.0) -> None:
+    def __init__(self, model_name: str = "llama-3.1-8b-instant", temperature: float = 0.0) -> None:
         if not settings.GROQ_API_KEY:
             raise ValueError("GROQ_API_KEY is required for evaluation")
 
@@ -97,7 +97,7 @@ class ClinicalJudge:
 
 async def run_evaluation(  # noqa: PLR0912 PLR0915
     dataset_name: str = "heartsafe_golden_dataset_v1",
-    model_name: str = "llama-3.3-70b-versatile",
+    model_name: str = "llama-3.1-8b-instant",
     temperature: float = 0.0,
     delay_seconds: int = 5,
 ) -> dict[str, Any]:
@@ -239,12 +239,15 @@ async def run_evaluation(  # noqa: PLR0912 PLR0915
                 try:
                     verdict = judge.evaluate(question, expected, actual_answer)
 
+                    score = float(verdict.get("score", 0.0))
+                    reasoning = str(verdict.get("reasoning", "No reasoning provided")) if verdict.get("reasoning") is not None else "No reasoning provided"
+
                     langfuse.create_score(
                         trace_id=root_span.trace_id,
                         name="clinical_accuracy",
-                        value=float(verdict["score"]),
+                        value=score,
                         data_type="NUMERIC",
-                        comment=verdict["reasoning"],
+                        comment=reasoning,
                         metadata={
                             "model": model_name,
                             "item_id": q_id,
@@ -252,17 +255,17 @@ async def run_evaluation(  # noqa: PLR0912 PLR0915
                             "response_length": len(actual_answer),
                         },
                     )
-                    logger.info(f"[{q_id}] Score: {verdict['score']}")
+                    logger.info(f"[{q_id}] Score: {score}")
 
                     results.append({
                         "id": q_id,
                         "question": question,
                         "expected": expected,
                         "actual": actual_answer,
-                        "score": float(verdict["score"]),
-                        "reasoning": verdict["reasoning"],
+                        "score": score,
+                        "reasoning": reasoning,
                     })
-                    total_score += float(verdict["score"])
+                    total_score += score
                 except Exception as e:
                     error_msg = f"Evaluation failed: {e!s}"
                     logger.error(f"Error in evaluation for item {q_id}: {error_msg}")
@@ -301,7 +304,7 @@ def main() -> None:
     parser.add_argument(
         "--model",
         type=str,
-        default="llama-3.3-70b-versatile",
+        default="llama-3.1-8b-instant",
         help="LLM model to use for the Judge",
     )
     parser.add_argument("--delay", type=int, default=5, help="Delay between evaluations in seconds")

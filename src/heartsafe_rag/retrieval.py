@@ -1,9 +1,7 @@
 import pickle
 import time
 
-from langchain.retrievers import ContextualCompressionRetriever, EnsembleRetriever
-from langchain.retrievers.document_compressors import CrossEncoderReranker
-from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
@@ -135,16 +133,8 @@ class HybridRetriever:
                 weights=settings.HYBRID_WEIGHTS,
             )
 
-            logger.info(f"Initializing Re-Ranker: {settings.RERANKER_MODEL}")
-            model = HuggingFaceCrossEncoder(model_name=settings.RERANKER_MODEL)
-            compressor = CrossEncoderReranker(model=model, top_n=settings.RERANK_TOP_K)
-
-            self._retriever = ContextualCompressionRetriever(
-                base_compressor=compressor,
-                base_retriever=ensemble,
-            )
-
-            logger.info("Hybrid Retriever with Cross-Encoder Re-ranking ready.")
+            self._retriever = ensemble
+            logger.info("Hybrid Ensemble Retriever ready.")
 
         except Exception as e:
             logger.critical(f"Failed to initialize retriever: {e}")
@@ -175,9 +165,10 @@ class HybridRetriever:
             logger.info(f"Vector search ({len(queries_to_run)} queries) took {t1 - t0:.2f}s")
 
             merged = self._merge_results(all_results)
+            capped = merged[:settings.INITIAL_RETRIEVAL_K]
             t_total_elapsed = time.perf_counter() - t_total
-            logger.info(f"Retrieved {len(merged)} documents after query rewriting + re-ranking in {t_total_elapsed:.2f}s")
-            return merged  # noqa: TRY300  # type: ignore[no-any-return]
+            logger.info(f"Retrieved {len(capped)} documents (from {len(merged)} merged) in {t_total_elapsed:.2f}s")
+            return capped  # noqa: TRY300  # type: ignore[no-any-return]
         except Exception as e:
             logger.error(f"Error during retrieval: {e!s}")
             raise

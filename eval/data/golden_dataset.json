@@ -3,7 +3,7 @@
     "id": "1",
     "question": "What are the four medication classes included in guideline-directed medical therapy (GDMT) for heart failure with reduced ejection fraction (HFrEF)?",
     "expected_answer": "The four medication classes are: 1) renin-angiotensin system inhibition with angiotensin receptor-neprilysin inhibitors (ARNi), angiotensin-converting enzyme inhibitors (ACEi), or angiotensin (II) receptor blockers (ARB) alone; 2) beta blockers; 3) mineralocorticoid receptor antagonists (MRAs); and 4) sodium-glucose cotransporter-2 inhibitors (SGLT2i).",
-    "source": "Guideline-directed medical therapy (GDMT) for HF with reduced ejection fraction (HFrEF) now includes 4 medication classes that include SGLT2i. The 4 groups are: 1) renin-angiotensin system inhibition with angiotensin receptor-neprilysin inhibitors (ARNi), angiotensin-converting enzyme inhibitors (ACEi), or angiotensin (II) receptor blockers (ARB) alone; 2) beta blockers; 3) mineralocorticoid receptor antagonists (MRAs); and 4) the new group, SGLT2i"
+    "source": "Guideline-directed medical therapy (GDMT) for HF with reduced ejection fraction (HFrEF) now includes 4 medication classes that include SGLT2i."
   },
   {
     "id": "2",
@@ -21,7 +21,7 @@
     "id": "4",
     "question": "What are the revised terminologies for Stage A and Stage B heart failure?",
     "expected_answer": "Stage A is now termed 'at-risk for HF' and Stage B is termed 'pre-HF'.",
-    "source": "Stages of HF were revised to emphasize the new terminologies of \u201cat risk\u201d for HF for stage A and pre-HF for stage B."
+    "source": "Stages of HF were revised to emphasize the new terminologies of 'at risk' for HF for stage A and pre-HF for stage B."
   },
   {
     "id": "5",
@@ -39,54 +39,204 @@
     "id": "7",
     "question": "What is the recommended screening for patients with a clinical suspicion of cardiac amyloidosis?",
     "expected_answer": "Screening should include serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains.",
-    "source": "Patients for whom there is a clinical suspicion for cardiac amyloidosis* (94-98) should have screening for serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains (99)."
+    "source": "Patients with clinical suspicion for cardiac amyloidosis should have screening for serum and urine monoclonal light chains with serum and urine immunofixation electrophoresis and serum free light chains."
   },
   {
     "id": "8",
-    "question": "When is an implantable cardioverter-defibrillator (ICD) recommended for primary prevention in Stage B patients?",
-    "expected_answer": "An ICD is recommended for patients who are at least 40 days post-myocardial infarction with LVEF \u226430% and NYHA class I symptoms while receiving GDMT, with a reasonable expectation of survival for >1 year.",
-    "source": "In patients who are at least 40 days post\u2013myocardial infarction with LVEF \u00a330% and NYHA class I symptoms while receiving GDMT and have reasonable expectation of meaningful survival for >1 year, an implantable cardioverter-defibrillator is recommended for primary prevention of sudden cardiac death to reduce total mortality (147)."
+    "question": "When is an implantable cardioverter-defibrillator (ICD) recommended for primary prevention in patients with ischemic heart disease?",
+    "expected_answer": "An ICD is recommended for patients who are at least 40 days post-myocardial infarction with LVEF ≤30% and NYHA class I symptoms while receiving GDMT, with a reasonable expectation of survival for >1 year.",
+    "source": "In patients at least 40 days post-myocardial infarction with LVEF ≤30% and NYHA class I symptoms while receiving GDMT who have reasonable expectation of meaningful survival for >1 year, an ICD is recommended for primary prevention."
   },
   {
     "id": "9",
     "question": "What is the recommendation for the use of thiazolidinediones in patients with LVEF <50%?",
     "expected_answer": "Thiazolidinediones should not be used because they increase the risk of heart failure, including hospitalizations (Class 3: Harm).",
-    "source": "In patients with LVEF <50%, thiazolidinediones should not be used because they increase the risk of HF, including hospitalizations (148)."
+    "source": "In patients with LVEF <50%, thiazolidinediones should not be used because they increase the risk of HF, including hospitalizations."
   },
   {
     "id": "10",
     "question": "What is the Class of Recommendation for intravenous iron replacement in patients with HFrEF and iron deficiency?",
     "expected_answer": "Intravenous iron replacement has a Class of Recommendation 2a to improve functional status and quality of life.",
-    "source": "In patients with HFrEF and iron deficiency with or without anemia, intravenous iron replacement is reasonable to improve functional status and quality of life (151-154)."
+    "source": "In patients with HFrEF and iron deficiency with or without anemia, intravenous iron replacement is reasonable to improve functional status and quality of life."
   },
   {
     "id": "11",
     "question": "Which medication is recommended for the management of hyperglycemia in patients with heart failure and type 2 diabetes to reduce HF-related morbidity and mortality?",
     "expected_answer": "The use of SGLT2i is recommended.",
-    "source": "In patients with HF and type 2 diabetes, the use of SGLT2i is recommended for the management of hyperglycemia and to reduce HF-related morbidity and mortality (31,32,165,166)."
+    "source": "In patients with HF and type 2 diabetes, the use of SGLT2i is recommended for the management of hyperglycemia and to reduce HF-related morbidity and mortality."
   },
   {
     "id": "12",
     "question": "What is the recommendation regarding the use of erythropoietin-stimulating agents in patients with heart failure and anemia?",
     "expected_answer": "Erythropoietin-stimulating agents should not be used to improve morbidity and mortality (Class 3: Harm).",
-    "source": "In patients with HF and anemia, erythropoietin-stimulating agents should not be used to improve morbidity and mortality (155,156)."
+    "source": "In patients with HF and anemia, erythropoietin-stimulating agents should not be used to improve morbidity and mortality."
   },
   {
     "id": "13",
-    "question": "What is the threshold for NT-proBNP to suggest increased filling pressures as listed in Appendix 1?",
-    "expected_answer": "The threshold for NT-proBNP is \u2265125 pg/mL.",
-    "source": "NT-proBNP $125 pg/mL*"
+    "question": "What is the threshold for NT-proBNP to suggest increased filling pressures?",
+    "expected_answer": "The threshold for NT-proBNP is ≥125 pg/mL.",
+    "source": "NT-proBNP ≥125 pg/mL"
   },
   {
     "id": "14",
     "question": "For patients with heart failure and central sleep apnea, what is the recommendation regarding adaptive servo-ventilation?",
     "expected_answer": "Adaptive servo-ventilation causes harm in patients with NYHA class II to IV HFrEF and central sleep apnea (Class 3: Harm).",
-    "source": "In patients with NYHA class II to IV HFrEF and central sleep apnea, adaptive servo-ventilation causes harm (162,163)."
+    "source": "In patients with NYHA class II to IV HFrEF and central sleep apnea, adaptive servo-ventilation causes harm."
   },
   {
     "id": "15",
     "question": "What is the recommendation for patients with HFrEF and hypertension regarding GDMT?",
     "expected_answer": "Uptitration of GDMT to the maximally tolerated target dose is recommended.",
-    "source": "In patients with HFrEF and hypertension, uptitration of GDMT to the maximally tolerated target dose is recommended (157-159)."
+    "source": "In patients with HFrEF and hypertension, uptitration of GDMT to the maximally tolerated target dose is recommended."
+  },
+  {
+    "id": "16",
+    "question": "What are the four stages of heart failure as defined in the 2022 AHA/ACC guideline?",
+    "expected_answer": "The four stages are: Stage A (at-risk for HF), Stage B (pre-HF), Stage C (symptomatic HF), and Stage D (advanced HF).",
+    "source": "Stages of HF: Stage A (at-risk for HF), Stage B (pre-HF), Stage C (symptomatic HF), Stage D (advanced HF)."
+  },
+  {
+    "id": "17",
+    "question": "What is the recommended first-line therapy for patients with heart failure with preserved ejection fraction (HFpEF)?",
+    "expected_answer": "SGLT2i are recommended for patients with HFpEF to reduce the risk of HF hospitalization (Class 2a). Diuretics are recommended for fluid management, and comorbidities should be treated.",
+    "source": "SGLT2i have a Class 2a recommendation in HFpEF. Diuretics are indicated for volume overload in patients with HFpEF."
+  },
+  {
+    "id": "18",
+    "question": "What is the recommendation for beta blocker therapy in patients with HFmrEF?",
+    "expected_answer": "Beta blockers are reasonable (Class 2a) in patients with HFmrEF to reduce the risk of HF hospitalization and cardiovascular death.",
+    "source": "Beta blockers have a Class 2a recommendation in patients with HFmrEF."
+  },
+  {
+    "id": "19",
+    "question": "What is the recommendation for ARNi in patients with HFmrEF?",
+    "expected_answer": "ARNi is reasonable (Class 2a) in patients with HFmrEF to reduce the risk of HF hospitalization and cardiovascular death.",
+    "source": "ARNi have a Class 2a recommendation in patients with HFmrEF."
+  },
+  {
+    "id": "20",
+    "question": "According to the 2022 guideline, what is the preferred RAS inhibitor for patients with HFrEF?",
+    "expected_answer": "ARNi is recommended as a replacement for ACEi or ARB in patients with HFrEF to reduce morbidity and mortality (Class 1).",
+    "source": "In patients with HFrEF, ARNi is recommended to replace ACEi or ARB to reduce morbidity and mortality."
+  },
+  {
+    "id": "21",
+    "question": "What is the recommendation for combined ARNi and MRA therapy in patients with HFrEF?",
+    "expected_answer": "ARNi and MRA are both recommended (Class 1) as part of GDMT in patients with HFrEF, and they are frequently used together as part of the four-drug regimen.",
+    "source": "ARNi and MRA are both Class 1 recommendations in HFrEF as components of GDMT."
+  },
+  {
+    "id": "22",
+    "question": "In patients with advanced heart failure (Stage D), what are the recommended treatment options?",
+    "expected_answer": "Options include referral to a heart failure specialist center, evaluation for heart transplantation, mechanical circulatory support (LVAD), and palliative care consultation.",
+    "source": "Patients with advanced HF (Stage D) should be referred to HF specialists. Heart transplant and LVAD evaluation should be considered."
+  },
+  {
+    "id": "23",
+    "question": "What is the recommendation for hydralazine and isosorbide dinitrate combination in patients with HFrEF?",
+    "expected_answer": "The combination of hydralazine and isosorbide dinitrate is recommended (Class 1) for self-identified African American patients with HFrEF and NYHA class III to IV symptoms on optimized GDMT to reduce morbidity and mortality.",
+    "source": "Hydralazine and isosorbide dinitrate is recommended for self-identified African American patients with HFrEF and NYHA class III to IV symptoms on optimized GDMT."
+  },
+  {
+    "id": "24",
+    "question": "What are the key biomarkers recommended for the diagnosis and monitoring of heart failure?",
+    "expected_answer": "BNP and NT-proBNP are recommended (Class 1) for the diagnosis of HF in patients with signs and symptoms. They are also useful for monitoring and prognosis. Troponin may also be useful for risk stratification.",
+    "source": "BNP and NT-proBNP are recommended for diagnosis of HF. They have prognostic value for monitoring."
+  },
+  {
+    "id": "25",
+    "question": "What is the recommendation for the management of atrial fibrillation in patients with heart failure?",
+    "expected_answer": "In patients with HF and AFib, rhythm control can be useful (Class 2a) for symptom management. Anticoagulation is recommended (Class 1) for patients with AFib and HF based on CHA2DS2-VASc score.",
+    "source": "Rhythm control is reasonable for patients with HF and AFib for symptom management. Anticoagulation is recommended for AFib with HF."
+  },
+  {
+    "id": "26",
+    "question": "For which patients with heart failure is anticoagulation recommended beyond atrial fibrillation?",
+    "expected_answer": "Anticoagulation is not recommended (Class 3: No Benefit) for patients with HF in sinus rhythm for the purpose of reducing morbidity or mortality.",
+    "source": "Anticoagulation has no benefit in patients with HF in sinus rhythm for reducing morbidity or mortality."
+  },
+  {
+    "id": "27",
+    "question": "What is the recommendation for screening and management of iron deficiency in patients with heart failure?",
+    "expected_answer": "Screening for iron deficiency is reasonable (Class 2a) in patients with HF, and intravenous iron replacement is reasonable in patients with HFrEF and iron deficiency to improve functional status and quality of life.",
+    "source": "Screening for iron deficiency is reasonable in patients with HF. Intravenous iron replacement is reasonable in HFrEF with iron deficiency."
+  },
+  {
+    "id": "28",
+    "question": "What are the Class 1 recommendations for MRA therapy in patients with heart failure?",
+    "expected_answer": "MRA is recommended (Class 1) in patients with HFrEF and LVEF ≤35%, NYHA class II to IV symptoms, while receiving beta blockers and RAS inhibitors, to reduce morbidity and mortality.",
+    "source": "MRA is recommended in patients with HFrEF, LVEF ≤35%, NYHA class II to IV, on beta blockers and RAS inhibitors."
+  },
+  {
+    "id": "29",
+    "question": "What is the recommendation for the management of hypertension in patients with heart failure?",
+    "expected_answer": "The management of hypertension in patients at risk for HF (Stage A) and those with HF is recommended (Class 1) to prevent the development of HF and reduce HF-related complications.",
+    "source": "Hypertension management is recommended in patients at risk for HF and those with HF to prevent HF development and complications."
+  },
+  {
+    "id": "30",
+    "question": "What is the recommendation for coronary revascularization in patients with HFrEF and coronary artery disease?",
+    "expected_answer": "Coronary artery bypass grafting (CABG) is recommended (Class 1) in patients with HFrEF and significant left main disease. CABG is reasonable (Class 2a) in patients with multivessel disease.",
+    "source": "CABG is recommended in patients with HFrEF and significant left main disease. CABG is reasonable in multivessel disease."
+  },
+  {
+    "id": "31",
+    "question": "What is the recommendation for palliative care in patients with advanced heart failure?",
+    "expected_answer": "Palliative care (including hospice) is recommended (Class 1) to improve quality of life in patients with advanced HF (Stage D) and should be initiated early in the disease trajectory.",
+    "source": "Palliative care is recommended to improve quality of life in patients with advanced HF."
+  },
+  {
+    "id": "32",
+    "question": "What is the recommendation regarding sodium-glucose cotransporter-2 inhibitors (SGLT2i) initiation in patients hospitalized with heart failure?",
+    "expected_answer": "SGLT2i can be safely initiated before discharge in patients with HF who are hospitalized for decompensation, regardless of diabetes status (Class 2a).",
+    "source": "SGLT2i can be initiated before discharge in patients hospitalized for HF decompensation."
+  },
+  {
+    "id": "33",
+    "question": "What is the recommendation regarding the use of nitrates alone in patients with heart failure?",
+    "expected_answer": "Nitrates alone are not recommended (Class 3: No Benefit) for the treatment of HF in the absence of angina or specific indications.",
+    "source": "Nitrates alone are not recommended for the treatment of HF in the absence of angina."
+  },
+  {
+    "id": "34",
+    "question": "What is the recommended target dose for beta blocker therapy in patients with HFrEF?",
+    "expected_answer": "Beta blockers should be uptitrated to the maximally tolerated target dose as studied in clinical trials, including carvedilol 25 mg twice daily, metoprolol succinate 200 mg once daily, or bisoprolol 10 mg once daily.",
+    "source": "Beta blockers should be uptitrated to the maximally tolerated target dose."
+  },
+  {
+    "id": "35",
+    "question": "What is the definition of heart failure with mildly reduced ejection fraction (HFmrEF)?",
+    "expected_answer": "HFmrEF is defined as symptomatic HF with LVEF between 41% and 49%.",
+    "source": "HFmrEF is defined as symptomatic HF with LVEF 41% to 49%."
+  },
+  {
+    "id": "36",
+    "question": "What is the recommendation for mineralocorticoid receptor antagonists in patients with HFpEF?",
+    "expected_answer": "MRA can be useful (Class 2b) in selected patients with HFpEF to reduce the risk of HF hospitalizations, particularly those with LVEF on the lower end of the preserved range.",
+    "source": "MRA may be considered in selected patients with HFpEF to reduce HF hospitalizations."
+  },
+  {
+    "id": "37",
+    "question": "What is the recommendation for the use of ARB in patients with HFrEF who cannot tolerate ACEi or ARNi?",
+    "expected_answer": "ARB is recommended (Class 1) as an alternative in patients with HFrEF who cannot tolerate ACEi or ARNi due to cough or angioedema.",
+    "source": "ARB is recommended as an alternative in patients with HFrEF who are intolerant to ACEi or ARNi."
+  },
+  {
+    "id": "38",
+    "question": "What is the recommendation regarding kidney function monitoring during GDMT initiation and titration?",
+    "expected_answer": "Renal function and potassium should be monitored before and after initiation or titration of RAS inhibitors, ARNi, and MRA. A modest increase in creatinine is acceptable (up to 30% increase) and should not prompt discontinuation.",
+    "source": "Renal function and potassium should be monitored during initiation and titration of RAS inhibitors, ARNi, and MRA."
+  },
+  {
+    "id": "39",
+    "question": "What is the recommendation for the treatment of cardiac amyloidosis in patients with heart failure?",
+    "expected_answer": "Tafamidis is recommended (Class 1) to reduce mortality and hospitalizations in patients with transthyretin cardiac amyloidosis (ATTR-CM) and NYHA class I to III symptoms.",
+    "source": "Tafamidis is recommended in patients with ATTR-CM and NYHA class I to III symptoms to reduce mortality and hospitalizations."
+  },
+  {
+    "id": "40",
+    "question": "What is the recommendation for the management of sleep-disordered breathing in patients with heart failure?",
+    "expected_answer": "In patients with HF and suspected sleep-disordered breathing, a formal sleep assessment is reasonable (Class 2a). Positive airway pressure may be considered (Class 2b) in patients with obstructive sleep apnea.",
+    "source": "Formal sleep assessment is reasonable in patients with HF and suspected sleep-disordered breathing."
   }
 ]

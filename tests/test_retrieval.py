@@ -17,7 +17,7 @@ def test_hybrid_retrieval_flow() -> None:
     docs = retriever.retrieve(query)
 
     assert len(docs) > 0, "Retriever returned no results!"
-    assert len(docs) <= settings.RERANK_TOP_K + 2, "Retriever returned too many results"
+    assert len(docs) <= settings.INITIAL_RETRIEVAL_K, "Retriever returned too many results"
 
     first_doc = docs[0]
     assert "source" in first_doc.metadata
