@@ -404,3 +404,7 @@ _build/
 
 # If you're using Jupyter Book
 .jupyter/nbconfig/common.d/*.json
+
+# Server logs
+*.err
+server.log
