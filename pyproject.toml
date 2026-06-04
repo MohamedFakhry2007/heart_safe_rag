@@ -50,6 +50,9 @@ pytesseract = "^0.3.10"
 jinja2 = "^3.1.6"
 langfuse = "^3.12.0"
 
+# Validation
+vlm-guard = "^0.2.0"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

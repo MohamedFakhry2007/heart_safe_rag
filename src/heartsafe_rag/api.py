@@ -14,7 +14,7 @@ from starlette.status import HTTP_200_OK, HTTP_408_REQUEST_TIMEOUT, HTTP_500_INT
 from heartsafe_rag.config import settings
 from heartsafe_rag.generation import GenerationService
 from heartsafe_rag.retrieval import HybridRetriever
-from heartsafe_rag.schemas import ChatRequest, ChatResponse, SourceDocument
+from heartsafe_rag.schemas import ChatRequest, ChatResponse, SourceDocument, ReasoningStep, ValidationAuditEntry, ValidationResult
 from heartsafe_rag.utils.logger import logger
 
 services: dict[str, Any] = {}
@@ -110,26 +110,28 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             timeout=settings.LLM_TIMEOUT,
         )
 
-        answer = await asyncio.wait_for(
+        gen_result = await asyncio.wait_for(
             asyncio.to_thread(gen_service.generate_response, query, context_docs),
             timeout=settings.LLM_TIMEOUT,
         )
 
-        sources_response = [
-            SourceDocument(
-                content=doc.page_content[:200] + "...",
-                source=doc.metadata.get("source", "unknown"),
-            )
-            for doc in context_docs
-        ]
-
-        response = ChatResponse(answer=answer, sources=sources_response)
+        response = ChatResponse(
+            answer=gen_result.answer,
+            sources=gen_result.sources or [],
+            reasoning_steps=gen_result.reasoning_steps or None,
+            validation=gen_result.validation,
+        )
         _cache.set(cache_key, response)
 
         elapsed = time.perf_counter() - t_start
+        log_reasoning = f" reasoning={len(gen_result.reasoning_steps)} steps" if gen_result.reasoning_steps else ""
+        log_validation = f" validation={gen_result.validation.status if gen_result.validation else 'disabled'}"
+
         logger.info(
-            f"Chat response [{request_id}] in {elapsed:.2f}s "
-            f"answer_preview='{answer[:100]}...' sources={len(sources_response)}",
+            f"Chat response [{request_id}] in {elapsed:.2f}s"
+            f" answer_preview='{gen_result.answer[:100]}...'"
+            f" sources={len(gen_result.sources)}"
+            f"{log_reasoning}{log_validation}",
             extra=log_extra,
         )
 

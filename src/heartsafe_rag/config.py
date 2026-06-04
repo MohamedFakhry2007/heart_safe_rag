@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     TESSERACT_CMD: str = "tesseract"
     OCR_ENABLED: bool = True
 
+    # VLM-guard validation settings
+    ENABLE_VALIDATION: bool = True
+    VALIDATION_MAX_RETRIES: int = 1
+    ENABLE_VLM_GUARD: bool = True
+
     # Timeouts
     LLM_TIMEOUT: int = 30
 

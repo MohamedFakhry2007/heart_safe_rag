@@ -5481,6 +5481,27 @@ h11 = ">=0.8"
 standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.15.1) ; sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\"", "watchfiles (>=0.13)", "websockets (>=10.4)"]
 
 [[package]]
+name = "vlm-guard"
+version = "0.2.0"
+description = "Medical Verification Layer for LLMs — composable, auditable guardrails for structured outputs (text + multimodal)"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "vlm_guard-0.2.0-py3-none-any.whl", hash = "sha256:3affc9f079154f5e8c171434ecb34e8a5725d6b0fe0467c54dca3252a132e6b9"},
+    {file = "vlm_guard-0.2.0.tar.gz", hash = "sha256:b8c7f8b2a847ae40a1dd4a69fc642d767486a8fae69163484faa8265063f9b0e"},
+]
+
+[package.dependencies]
+Pillow = ">=10.0.0"
+pydantic = ">=2.0.0"
+
+[package.extras]
+all = ["accelerate (>=0.25.0)", "fpdf (>=1.7.2)", "vlm-guard[image]"]
+dev = ["pytest (>=7.0.0)"]
+image = ["bitsandbytes (>=0.41.0)", "torch (>=2.0.0)", "transformers (>=4.40.0)"]
+
+[[package]]
 name = "watchdog"
 version = "6.0.0"
 description = "Filesystem events monitoring"
@@ -6038,4 +6059,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "b6160d5d8dcdc230a416437203db13e528a9d8935a0df62bc71d0248f0282309"
+content-hash = "ea5997cbfd37b7250302b2714f5f4add4b5c80caa744aafc3842a05ba4d87ae8"

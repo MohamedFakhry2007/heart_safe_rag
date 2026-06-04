@@ -4,7 +4,7 @@ This package provides a RAG (Retrieval-Augmented Generation) system specifically
 designed for heart failure guidelines, with a focus on accuracy and reliability.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 # Import key components to make them available at package level
 # Set up logging configuration
