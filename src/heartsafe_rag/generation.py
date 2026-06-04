@@ -17,6 +17,15 @@ from heartsafe_rag.utils.logger import logger
 _llm_log_handler = LLMResponseLoggingHandler(logger)
 
 SYSTEM_PROMPT_PATH = Path("prompts/system_prompt_structured.txt")
+
+
+def _extract_source_indices(text: str) -> list[int]:
+    import re as _re
+    return sorted({
+        int(m.group(1))
+        for m in _re.finditer(r"\[Chunk\s+(\d+)\]", text)
+    })
+
 _FALLBACK_PROMPT_PATH = Path("prompts/system_prompt.txt")
 
 
@@ -100,7 +109,10 @@ class GenerationService:
                 reasoning_steps=[ReasoningStep(step="No relevant guidelines found in the provided context.", claim_type="refusal")],
             )
 
-        context_text = "\n\n".join(doc.page_content for doc in context_docs)
+        context_parts = []
+        for i, doc in enumerate(context_docs):
+            context_parts.append("[Chunk {}]\n{}".format(i, doc.page_content))
+        context_text = "\n\n".join(context_parts)
 
         t0 = time.perf_counter()
         try:
@@ -131,8 +143,9 @@ class GenerationService:
                 SourceDocument(
                     content=doc.page_content[:200] + "...",
                     source=doc.metadata.get("source", "unknown"),
+                    chunk_index=doc.metadata.get("chunk_id", i),
                 )
-                for doc in context_docs
+                for i, doc in enumerate(context_docs)
             ],
         )
 
@@ -146,7 +159,11 @@ class GenerationService:
             claims, answer, raw_dict = vlm_parse(raw_text, domain="cardiology")
             if claims and answer:
                 steps = [
-                    ReasoningStep(step=c.claim_text or c.findings, claim_type=c.claim_type)
+                    ReasoningStep(
+                        step=c.claim_text or c.findings,
+                        claim_type=c.claim_type,
+                        source_indices=_extract_source_indices(c.claim_text or c.findings),
+                    )
                     for c in claims
                 ]
                 return steps, answer
@@ -159,11 +176,19 @@ class GenerationService:
                 steps = []
                 for s in steps_raw:
                     if isinstance(s, str):
-                        steps.append(ReasoningStep(step=s))
+                        steps.append(ReasoningStep(
+                            step=s,
+                            source_indices=_extract_source_indices(s),
+                        ))
                     elif isinstance(s, dict):
+                        src_idx = s.get("sources", s.get("source_indices", []))
+                        if not src_idx:
+                            step_text = s.get("step", s.get("claim", ""))
+                            src_idx = _extract_source_indices(step_text)
                         steps.append(ReasoningStep(
                             step=s.get("step", s.get("claim", "")),
                             claim_type=s.get("claim_type", "other"),
+                            source_indices=src_idx,
                         ))
                 return steps, data.get("answer", "")
         except (json.JSONDecodeError, TypeError, ValueError):
@@ -182,8 +207,9 @@ class GenerationService:
             SourceDocument(
                 content=doc.page_content[:200] + "...",
                 source=doc.metadata.get("source", "unknown"),
+                chunk_index=doc.metadata.get("chunk_id", i),
             )
-            for doc in (context_docs or [])
+            for i, doc in enumerate(context_docs or [])
         ]
 
         if not settings.ENABLE_VALIDATION or self.validation_service is None:

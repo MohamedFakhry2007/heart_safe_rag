@@ -135,6 +135,246 @@
             color: #888;
             font-size: 0.9rem;
         }
+
+        /* Validation Styling */
+        .validation-section {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 0.85rem;
+        }
+
+        .validation-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .validation-badge.passed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .validation-badge.blocked {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .validation-badge.flagged {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .validation-badge.corrected {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .validation-badge.unverifiable {
+            background-color: #e2e3e5;
+            color: #383d41;
+            border: 1px solid #d6d8db;
+        }
+
+        .audit-toggle {
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            user-select: none;
+        }
+
+        .audit-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .audit-entries {
+            display: none;
+            margin-top: 6px;
+        }
+
+        .audit-entries.open {
+            display: block;
+        }
+
+        .audit-entry {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border-left: 3px solid #999;
+            font-size: 0.8rem;
+        }
+
+        .audit-entry.severity-error {
+            background-color: #fff5f5;
+            border-left-color: #dc3545;
+        }
+
+        .audit-entry.severity-warning {
+            background-color: #fffdf0;
+            border-left-color: #ffc107;
+        }
+
+        .audit-entry.severity-info {
+            background-color: #f0f7ff;
+            border-left-color: #17a2b8;
+        }
+
+        .audit-entry .rule-name {
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .audit-entry .action-tag {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+
+        .audit-entry .action-tag.block {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .audit-entry .action-tag.flag {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .audit-entry .action-tag.correct {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .audit-entry .action-tag.promote {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+        .audit-entry .action-tag.pass {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .audit-entry .entry-message {
+            margin-top: 2px;
+            color: #444;
+        }
+
+        /* Reasoning Steps Styling */
+        .reasoning-section {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 0.85rem;
+        }
+
+        .reasoning-toggle {
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.8rem;
+            user-select: none;
+        }
+
+        .reasoning-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .reasoning-steps {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .reasoning-steps.open {
+            display: block;
+        }
+
+        .reasoning-step {
+            padding: 6px 8px 6px 20px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-color);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .reasoning-step::before {
+            content: attr(data-step-num);
+            position: absolute;
+            left: 5px;
+            top: 6px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--primary-color);
+        }
+
+        .reasoning-step .claim-type-tag {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 4px;
+            background-color: #e8f4fd;
+            color: #0d6efd;
+        }
+
+        .citation-link {
+            cursor: pointer;
+            color: #0d6efd;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dotted #0d6efd;
+        }
+
+        .citation-link:hover {
+            color: #0a58ca;
+            border-bottom: 1px solid #0a58ca;
+        }
+
+        .source-index-tag {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background-color: #e2e3e5;
+            color: #383d41;
+            cursor: pointer;
+        }
+
+        .source-index-tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .source-highlight {
+            background-color: #fff3cd !important;
+            border-left-color: #ffc107 !important;
+            transition: background-color 0.5s;
+        }
     </style>
 </head>
 <body>
@@ -163,13 +403,167 @@
     const sendBtn = document.getElementById('send-btn');
 
     // Function to append message to chat
-    function appendMessage(text, sender, sources = null) {
+    function appendMessage(text, sender, sources = null, validation = null, reasoningSteps = null) {
         const div = document.createElement('div');
         div.className = `message ${sender}`;
         
         // Convert newlines to breaks for AI responses
         let content = text.replace(/\n/g, '<br>');
         div.innerHTML = content;
+
+        // If validation info exists, render it (AI messages only)
+        if (validation && sender === 'ai') {
+            const valSection = document.createElement('div');
+            valSection.className = 'validation-section';
+
+            const statusLabels = {
+                passed: 'All claims verified',
+                blocked: 'Answer blocked - claims unverifiable',
+                flagged: 'Some claims flagged for review',
+                corrected: 'Some claims auto-corrected',
+                unverifiable: 'Unable to verify all claims'
+            };
+            const label = statusLabels[validation.status] || validation.status;
+
+            const badges = document.createElement('div');
+            badges.style.cssText = 'display:flex; align-items:center; gap:6px; flex-wrap:wrap;';
+
+            const badge = document.createElement('span');
+            badge.className = 'validation-badge ' + validation.status;
+
+            const icons = {
+                passed: '\u2714\uFE0F ',
+                blocked: '\u26D4 ',
+                flagged: '\u26A0\uFE0F ',
+                corrected: '\uD83D\uDD27 ',
+                unverifiable: '\u2753 '
+            };
+            badge.textContent = (icons[validation.status] || '') + label;
+            badges.appendChild(badge);
+
+            if (validation.rules_fired && validation.rules_fired.length > 0) {
+                const countBadge = document.createElement('span');
+                countBadge.style.cssText =
+                    'font-size:0.7rem; color:#666; border:1px solid #ccc; border-radius:3px; padding:1px 6px;';
+                countBadge.textContent = validation.rules_fired.length + ' rule' +
+                    (validation.rules_fired.length !== 1 ? 's' : '') + ' activated';
+                badges.appendChild(countBadge);
+            }
+
+            valSection.appendChild(badges);
+
+            // Audit trail (collapsible)
+            if (validation.rules_fired && validation.rules_fired.length > 0) {
+                const toggle = document.createElement('div');
+                toggle.className = 'audit-toggle';
+                toggle.textContent = '\u25BC View audit details';
+
+                const entries = document.createElement('div');
+                entries.className = 'audit-entries';
+
+                validation.rules_fired.forEach(function (rule) {
+                    const entry = document.createElement('div');
+                    entry.className = 'audit-entry severity-' + (rule.severity || 'info');
+
+                    const actionLabels = {
+                        block: 'BLOCK',
+                        flag: 'FLAG',
+                        correct: 'CORRECT',
+                        promote: 'PROMOTE',
+                        pass: 'PASS'
+                    };
+                    const actionLabel = actionLabels[rule.action_type] || rule.action_type.toUpperCase();
+
+                    entry.innerHTML = [
+                        '<div>',
+                        '<span class="rule-name">' + rule.rule_name + '</span>',
+                        '<span class="action-tag ' + rule.action_type + '">' + actionLabel + '</span>',
+                        '</div>',
+                        '<div class="entry-message">' + rule.message + '</div>',
+                    ].join('');
+                    entries.appendChild(entry);
+                });
+
+                toggle.addEventListener('click', function () {
+                    entries.classList.toggle('open');
+                    toggle.textContent = entries.classList.contains('open')
+                        ? '\u25B2 Hide audit details'
+                        : '\u25BC View audit details';
+                });
+
+                valSection.appendChild(toggle);
+                valSection.appendChild(entries);
+            }
+
+            div.appendChild(valSection);
+        }
+
+        // If reasoning steps exist, render them (AI messages only)
+        if (reasoningSteps && reasoningSteps.length > 0 && sender === 'ai') {
+            (function () {
+                const sec = document.createElement('div');
+                sec.className = 'reasoning-section';
+
+                const toggle = document.createElement('div');
+                toggle.className = 'reasoning-toggle';
+                toggle.textContent = '\u25BC Reasoning (' + reasoningSteps.length + ' steps)';
+
+                const stepsDiv = document.createElement('div');
+                stepsDiv.className = 'reasoning-steps';
+
+                reasoningSteps.forEach(function (step, idx) {
+                    const el = document.createElement('div');
+                    el.className = 'reasoning-step';
+                    el.setAttribute('data-step-num', (idx + 1) + '.');
+
+                    var header = '';
+                    if (step.claim_type) {
+                        header += '<span class="claim-type-tag">' + step.claim_type + '</span>';
+                    }
+
+                    var text = step.step || '';
+                    var sourceLinks = '';
+                    if (step.source_indices && step.source_indices.length > 0) {
+                        sourceLinks = ' <span style="font-size:0.7rem;color:#666;">\u2014 supports:</span> ';
+                        sourceLinks += step.source_indices.map(function (si) {
+                            return '<span class="source-index-tag" data-si="' + si + '">[' + si + ']</span>';
+                        }).join(' ');
+                    }
+
+                    el.innerHTML = header + ' ' + text + sourceLinks;
+                    stepsDiv.appendChild(el);
+
+                    // Add click handler for source index tags
+                    if (step.source_indices && step.source_indices.length > 0) {
+                        var tags = el.querySelectorAll('.source-index-tag');
+                        var sourceContainer = div.querySelectorAll('.citation-item');
+                        tags.forEach(function (tag) {
+                            tag.addEventListener('click', function () {
+                                var si = parseInt(this.getAttribute('data-si'));
+                                sourceContainer.forEach(function (item) {
+                                    item.classList.remove('source-highlight');
+                                });
+                                if (sourceContainer[si]) {
+                                    sourceContainer[si].classList.add('source-highlight');
+                                    sourceContainer[si].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }
+                            });
+                        });
+                    }
+                });
+
+                toggle.addEventListener('click', function () {
+                    stepsDiv.classList.toggle('open');
+                    toggle.textContent = stepsDiv.classList.contains('open')
+                        ? '\u25B2 Reasoning (' + reasoningSteps.length + ' steps)'
+                        : '\u25BC Reasoning (' + reasoningSteps.length + ' steps)';
+                });
+
+                sec.appendChild(toggle);
+                sec.appendChild(stepsDiv);
+                div.appendChild(sec);
+            })();
+        }
 
         // If sources exist (RAG), append them nicely
         if (sources && sources.length > 0) {
@@ -238,7 +632,7 @@
             const data = await response.json();
             console.log('[Chat] Response:', data);
 
-            appendMessage(data.answer, 'ai', data.sources);
+            appendMessage(data.answer, 'ai', data.sources, data.validation, data.reasoning_steps);
 
         } catch (error) {
             clearTimeout(timeoutId);

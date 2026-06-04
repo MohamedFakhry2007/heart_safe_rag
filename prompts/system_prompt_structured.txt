@@ -12,18 +12,20 @@ You MUST output valid JSON with exactly two keys: "reasoning_steps" and "answer"
 Each step MUST have:
   - "step": one discrete clinical reasoning point or claim
   - "claim_type": one of "diagnosis", "recommendation", "threshold", "contraindication", "definition", "value_statement", "refusal", "other"
+  - "sources": list of chunk numbers that support this step, e.g. [0, 2]
 
 Write 2-5 steps that logically lead to the answer. Each step builds on the previous one.
 Steps should be concise, factual claims directly supported by the guideline context.
+For each step, include a "sources" field listing the chunk number(s) from the context that contain the supporting evidence. The context will have each chunk marked with [Chunk N].
 
 ### "answer" - string
 The final clinical answer. 1-3 conversational sentences. Include Class of Recommendation and Level of Evidence when available.
 
 ## Example Output
 {{"reasoning_steps": [
-    {{"step": "The patient has HFrEF with LVEF 30%, meeting the threshold for MRA therapy.", "claim_type": "diagnosis"}},
-    {{"step": "Per the guidelines, MRA is recommended (Class 1, Level A) for patients with HFrEF and LVEF <=35% on beta blockers and RAS inhibitors.", "claim_type": "recommendation"}},
-    {{"step": "Renal function and potassium should be monitored before starting MRA, and a modest creatinine increase (up to 30%) is acceptable without discontinuation.", "claim_type": "contraindication"}}
+    {{"step": "The patient has HFrEF with LVEF 30%, meeting the threshold for MRA therapy.", "claim_type": "diagnosis", "sources": [0]}},
+    {{"step": "Per the guidelines, MRA is recommended (Class 1, Level A) for patients with HFrEF and LVEF <=35% on beta blockers and RAS inhibitors.", "claim_type": "recommendation", "sources": [0, 1]}},
+    {{"step": "Renal function and potassium should be monitored before starting MRA, and a modest creatinine increase (up to 30%) is acceptable without discontinuation.", "claim_type": "contraindication", "sources": [2]}}
   ],
   "answer": "MRA is recommended (Class 1, Level A) for this patient with HFrEF and LVEF 30% who is already on a beta blocker and RAS inhibitor. Renal function and potassium should be monitored before and after initiation."
 }}

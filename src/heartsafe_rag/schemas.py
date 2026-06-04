@@ -10,6 +10,7 @@ class ChatRequest(BaseModel):
 class SourceDocument(BaseModel):
     content: str = Field(..., description="The content snippet from the document.")
     source: str = Field(..., description="The source filename or identifier.")
+    chunk_index: int = Field(default=0, description="Index of this chunk in the retrieval result.")
 
 
 class ReasoningStep(BaseModel):
@@ -17,6 +18,10 @@ class ReasoningStep(BaseModel):
     claim_type: str = Field(
         default="other",
         description="Type of claim: diagnosis, recommendation, threshold, contraindication, definition, value_statement, refusal, other",
+    )
+    source_indices: list[int] = Field(
+        default_factory=list,
+        description="Indices into the response's sources array that support this step.",
     )
 
 

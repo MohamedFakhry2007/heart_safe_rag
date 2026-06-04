@@ -131,5 +131,6 @@ disable_error_code = [
 [dependency-groups]
 dev = [
     "mypy (>=1.19.1,<2.0.0)",
-    "ruff (>=0.14.11,<0.15.0)"
+    "ruff (>=0.14.11,<0.15.0)",
+    "pypdf (>=6.12.2,<7.0.0)"
 ]

@@ -9,11 +9,13 @@ from vlm_guard import (
 
 from heartsafe_rag.validation.rules import (
     CORLevelRule,
+    CSVCorRule,
     LVEFThresholdRule,
     DrugClassRule,
     ContraindicationRule,
     ValueStatementRule,
     AnswerConsistencyRule,
+    AnswerCORCrossCheckRule,
 )
 from heartsafe_rag.config import settings
 from heartsafe_rag.utils.logger import logger
@@ -22,11 +24,13 @@ from heartsafe_rag.utils.logger import logger
 def _build_engine() -> GuardrailEngine:
     engine = GuardrailEngine()
     engine.register(CORLevelRule())
+    engine.register(CSVCorRule())
     engine.register(LVEFThresholdRule())
     engine.register(DrugClassRule())
     engine.register(ContraindicationRule())
     engine.register(ValueStatementRule())
     engine.register_cross_claim(AnswerConsistencyRule())
+    engine.register_cross_claim(AnswerCORCrossCheckRule())
     logger.info(
         "VLM-guard engine initialized: {} claim rules, {} cross-claim rules".format(
             len(engine._rules), len(engine._cross_claim_rules)
