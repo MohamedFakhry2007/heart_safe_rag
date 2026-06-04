@@ -39,7 +39,7 @@ flowchart TB
         G[User Query] --> H[Query Rewriting<br/>HyDE + Multi-Query]
         H --> I[Hybrid Retrieval<br/>FAISS + BM25 Ensemble]
         I --> J{Guard Check:<br/>Docs Retrieved?}
-        J -->|Yes| K[Structured LLM Generation<br/>Llama-3.1-8b (Groq)]
+        J -->|Yes| K["Structured LLM Generation<br/>Llama-3.1-8b (Groq)"]
         J -->|No| N[Refusal Response]
         K --> L[VLM-Guard Validation<br/>8 Rule Engines]
         L --> M{Validation<br/>Passed?}
